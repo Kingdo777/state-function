@@ -14,8 +14,7 @@ RESIZE_IMAGE = 'img-resize/panda-resize.jpg'
 
 def main(event):
     startTime = 1000 * time.time()
-    # img = pickle.loads(event['serialized_resize'])
-    img = event['serialized_resize']
+    img = pickle.loads(event['serialized_resize'])
     gd = tf.GraphDef.FromString(open('data/mobilenet_v2_1.0_224_frozen.pb', 'rb').read())
 
     inp, predictions = tf.import_graph_def(gd, return_elements=['input:0', 'MobilenetV2/Predictions/Reshape_1:0'])

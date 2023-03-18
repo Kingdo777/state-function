@@ -15,17 +15,17 @@
 #endif
 
 
-#define WK_CHECK_WITH_EXIT(condition, msg) \
+#define DF_CHECK_WITH_EXIT(condition, msg) \
     do                                     \
     {                                      \
         bool check = (condition);          \
         if (check)                         \
             break;                         \
-        WK_CHECK(check, msg);              \
-        exit(EXIT_FAILURE);                \
+        DF_CHECK(check, msg);              \
+        assert(false);                     \
     } while (false)
 
-#define WK_CHECK(condition, msg) \
+#define DF_CHECK(condition, msg) \
     do                           \
     {                            \
         if (!(condition))        \

@@ -37,8 +37,8 @@ void df::utils::initLog(std::string exec_name, const std::string& log_type)
         // %=6l     是全写log类型，info、debug等，=6表示占6字符居中
         // %-60v    是log内容，-60表示占60字符左对齐
         // %@       是文件名和行号
-//        spdlog::set_pattern(fmt::format("%^ [{:^20}] [%H:%M:%S] [%t] [%=6l]%$ %-60v [%@]", exec_name));
-        spdlog::set_pattern(fmt::format("%^[%=6l]%$ %-60v", exec_name));
+        spdlog::set_pattern(fmt::format("%^ [{:^20}] [%H:%M:%S] [%t] [%=6l]%$ %-60v [%@]", exec_name));
+//        spdlog::set_pattern(fmt::format("%^[%=6l]%$ %-60v", exec_name));
     }
 
     spdlog::level::level_enum log_level;

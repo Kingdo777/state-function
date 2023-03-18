@@ -69,6 +69,9 @@ add_subdirectory(src/common)
 add_subdirectory(src/shm)
 add_subdirectory(src/datafunction-py-interface)
 add_subdirectory(src/datafunction-py-extend)
+add_subdirectory(src/DataStruct)
+
+add_subdirectory(test)
 
 add_executable(DataFunction main.cpp)
 target_include_directories(DataFunction PRIVATE ${DataFunction_INCLUDE_DIR})

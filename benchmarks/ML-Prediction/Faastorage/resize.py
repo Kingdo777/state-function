@@ -23,6 +23,6 @@ def main(event):
     serialized_resize = pickle.dumps(resize_img)
     endTime = 1000 * time.time()
     # Baseline allows 1MB messages to be shared, use S3 to communicate messages
-    response["serialized_resize"] = resize_img
+    response["serialized_resize"] = serialized_resize
 
     return timestamp(response, event, startTime, endTime)
