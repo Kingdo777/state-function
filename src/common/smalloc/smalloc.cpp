@@ -2,10 +2,10 @@
 // Created by kingdo on 23-3-13.
 //
 
-#include <df/utils/smalloc.h>
+#include <df/smalloc/smalloc.h>
 #include <df/utils/log.h>
 
-namespace df::utils {
+namespace df {
 
     StaticAllocatableMemory::StaticAllocatableMemory(void *addr, size_t len, bool init) :
             start_addr(addr), length(len), initSector(nullptr), nextFreeSector(nullptr) {
@@ -40,7 +40,7 @@ namespace df::utils {
     void *StaticAllocatableMemory::malloc(size_t size) {
         SPDLOG_DEBUG("malloc {} bytes", size);
 
-        UniqueLock lock(staticAllocatableMemoryMutex);
+        df::utils::UniqueLock lock(staticAllocatableMemoryMutex);
 
         // Jump from sector to sector untill you find a free sector with enough space
         auto *currentSector = nextFreeSector;
@@ -79,7 +79,7 @@ namespace df::utils {
     void StaticAllocatableMemory::free(void *pAddress) {
         SPDLOG_DEBUG("free {}", pAddress);
 
-        UniqueLock lock(staticAllocatableMemoryMutex);
+        df::utils::UniqueLock lock(staticAllocatableMemoryMutex);
 
         auto *pSector = getSectorFromAddress(pAddress);
         DF_CHECK_WITH_EXIT(pSector != nullptr,
@@ -151,7 +151,7 @@ namespace df::utils {
 
     StaticAllocatableMemory::sector *StaticAllocatableMemory::getRightSector(StaticAllocatableMemory::sector *pSector) {
         DF_CHECK_WITH_EXIT(isValidSector(pSector), "Sector is not Valid!");
-        auto *right = (sector *) (((char *) pSector) + SIZE_OF_SECTOR + pSector->size);
+        auto *right = (sector * )(((char *) pSector) + SIZE_OF_SECTOR + pSector->size);
         if (!isValidSector(right))
             right = nullptr;
         return right;
@@ -166,7 +166,7 @@ namespace df::utils {
     }
 
     StaticAllocatableMemory::sector *StaticAllocatableMemory::getSectorFromAddress(void *address) {
-        auto *s = (sector *) ((char *) address - SIZE_OF_SECTOR);
+        auto *s = (sector * )((char *) address - SIZE_OF_SECTOR);
         if (!isValidSector(s)) {
             SPDLOG_WARN("Sector is not Valid, from address {:p}", address);
             s = nullptr;

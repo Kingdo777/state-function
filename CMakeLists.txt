@@ -66,13 +66,9 @@ function(df_lib_static lib_name)
 endfunction()
 
 add_subdirectory(src/common)
-add_subdirectory(src/shm)
-add_subdirectory(src/datafunction-py-interface)
-add_subdirectory(src/datafunction-py-extend)
-add_subdirectory(src/DataStruct)
+add_subdirectory(src/DataFunction)
+add_subdirectory(src/DataFunctionManager)
+add_subdirectory(src/DataFunctionSidecar)
 
 add_subdirectory(test)
 
-add_executable(DataFunction main.cpp)
-target_include_directories(DataFunction PRIVATE ${DataFunction_INCLUDE_DIR})
-target_link_libraries(DataFunction df::utils df::shm df::datafunction-py-interface)

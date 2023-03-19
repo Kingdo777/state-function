@@ -5,8 +5,8 @@
 #ifndef DATAFUNCTION_DATAFUNCTIONKVSTOREBUCKET_H
 #define DATAFUNCTION_DATAFUNCTIONKVSTOREBUCKET_H
 
-#include <df/utils/smalloc.h>
-#include <df/utils/shm.h>
+#include <df/smalloc/smalloc.h>
+#include <df/shm/shm.h>
 
 #include <utility>
 #include <set>
@@ -36,17 +36,17 @@ namespace df::dataStruct::KV_Store {
             /// DFContainer-Manager allocate key, and create&&send to DF-Container
             key_t SHM_KEY = 0x7777;
             /// DF-Container Create the shm
-            auto datafunctionContainer_shm = utils::SHM::createSHM(SHM_KEY, bucket_size);
+            auto datafunctionContainer_shm = SHM::createSHM(SHM_KEY, bucket_size);
             //// after create the shm, DFContainer-Manager send the Key to Worker-Container
             /// ################################################################
 
             /// get shm bey the Key received form DFContainer-Manager
-            shm = utils::SHM::getSHM(SHM_KEY);
+            shm = SHM::getSHM(SHM_KEY);
             bucket_size = shm->getSHMSize();
 
             /// init KVStoreBucket
-            storeMemoryRegion = utils::StaticAllocatableMemory::CreateStaticAllocatableMemory(shm->getAddress(),
-                                                                                              shm->getSHMSize());
+            storeMemoryRegion = StaticAllocatableMemory::CreateStaticAllocatableMemory(shm->getAddress(),
+                                                                                       shm->getSHMSize());
         }
 
         explicit DataFunctionKVStoreBucket(std::string name) : bucket_name(std::move(name)), bucket_size(0) {
@@ -55,15 +55,16 @@ namespace df::dataStruct::KV_Store {
             key_t SHM_KEY = 0x7777;
             /// ################################################################
 
-            shm = utils::SHM::getSHM(SHM_KEY);
+            shm = SHM::getSHM(SHM_KEY);
             bucket_size = shm->getSHMSize();
 
-            storeMemoryRegion = utils::StaticAllocatableMemory::LoadStaticAllocatableMemory(shm->getAddress(),
-                                                                                            shm->getSHMSize());
+            storeMemoryRegion = StaticAllocatableMemory::LoadStaticAllocatableMemory(shm->getAddress(),
+                                                                                     shm->getSHMSize());
             constructKVStoreValue();
         }
 
         std::string get(const std::string &key) {
+            DF_CHECK_WITH_EXIT(!destroyed, "Bucket has been destroyed");
             DF_CHECK_WITH_EXIT(metadata_index_map.contains(key), fmt::format("KEY `{}` is not existed", key));
             auto keys_index = metadata_index_map.at(key);
             char *value_addr = (char *) KVStoreValueVector[keys_index][VALUE_ADDRESS];
@@ -72,6 +73,7 @@ namespace df::dataStruct::KV_Store {
         }
 
         uint64_t get(const std::string &key, void **value_addr) {
+            DF_CHECK_WITH_EXIT(!destroyed, "Bucket has been destroyed");
             DF_CHECK_WITH_EXIT(metadata_index_map.contains(key), fmt::format("KEY `{}` is not existed", key));
             auto keys_index = metadata_index_map.at(key);
             *value_addr = (void *) KVStoreValueVector[keys_index][VALUE_ADDRESS];
@@ -80,7 +82,8 @@ namespace df::dataStruct::KV_Store {
         }
 
         void set(const char *key, size_t key_size, const char *value, size_t value_size) {
-            std::string key_s;
+            DF_CHECK_WITH_EXIT(!destroyed, "Bucket has been destroyed");
+            std::string key_s{key, key_size};
             DF_CHECK_WITH_EXIT(key_s.size() == key_size, "Key must is a string");
 
             DF_CHECK_WITH_EXIT(!metadata_index_map.contains(key_s), fmt::format("KEY `{}` is existed", key_s));
@@ -98,6 +101,7 @@ namespace df::dataStruct::KV_Store {
         }
 
         void set(const std::string &key, const std::string &value) {
+            DF_CHECK_WITH_EXIT(!destroyed, "Bucket has been destroyed");
             DF_CHECK_WITH_EXIT(!metadata_index_map.contains(key), fmt::format("KEY `{}` is existed", key));
             metadata_index_map.emplace(key, KVStoreValueVector.size());
 
@@ -115,14 +119,21 @@ namespace df::dataStruct::KV_Store {
             KVStoreValueVector.push_back({value_address, value_size});
         }
 
+        size_t getBucketSize() const {
+            return bucket_size;
+        }
+
         void destroy() {
             /// TODO
             shm->destroy();
+            destroyed = true;
         }
 
     private:
         std::string bucket_name;
         size_t bucket_size;
+
+        bool destroyed = false;
 
         enum KVStoreValue_Index {
             VALUE_ADDRESS,
@@ -134,8 +145,8 @@ namespace df::dataStruct::KV_Store {
         std::unordered_map<std::string, uint64_t> metadata_index_map;
 
 
-        std::shared_ptr<utils::SHM> shm;
-        std::shared_ptr<utils::StaticAllocatableMemory> storeMemoryRegion;
+        std::shared_ptr<SHM> shm;
+        std::shared_ptr<StaticAllocatableMemory> storeMemoryRegion;
 
         void constructKVStoreValue() {
             storeMemoryRegion->traverseData([&](const char *address) {

@@ -14,7 +14,7 @@
 #define SIZE_OF_SECTOR sizeof(sector)
 #define PAGE_SIZE 4096
 
-namespace df::utils {
+namespace df {
 
     class StaticAllocatableMemory {
 

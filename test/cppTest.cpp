@@ -4,14 +4,28 @@
 
 #include <df/utils/log.h>
 #include <string>
+#include <utility>
+
+class ClassA {
+public:
+    std::string name;
+    explicit ClassA(std::string name_) : name(std::move(name_)) {}
+    ~ClassA() {
+        SPDLOG_WARN("~ClassA {}", name);
+    }
+};
+
+typedef struct {
+    std::shared_ptr<ClassA> sp_a;
+} StructA;
 
 int main() {
-    char data[6] = {'1', '2', '3', '4', '5', '6'};
+    auto a1 = (StructA *) malloc(sizeof(StructA));
+    a1->sp_a = std::make_shared<ClassA>("Delete a1");
+    delete a1;
 
-    auto s1 = std::string{data};
-    auto s2 = std::string{data, 6};
-
-    SPDLOG_INFO(s1);
-    SPDLOG_INFO(s2);
-
+    auto a2 = (StructA *) malloc(sizeof(StructA));
+    a2->sp_a = std::make_shared<ClassA>("Free a2");
+    a2->sp_a.reset();
+    free(a2);
 }

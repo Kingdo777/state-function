@@ -22,7 +22,7 @@
         if (check)                         \
             break;                         \
         DF_CHECK(check, msg);              \
-        assert(false);                     \
+        exit(0);                           \
     } while (false)
 
 #define DF_CHECK(condition, msg) \

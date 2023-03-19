@@ -5,11 +5,11 @@ file(GLOB HEADERS_FILE ${DataFunction_INCLUDE_DIR}/df/data-struct/kvstore/*.h)
 add_library(datafunction-struct-kvstore STATIC ${SOURCES_FILE} ${HEADERS_FILE})
 # 在这里如果不用PUBLIC, 那么使用这些库的可执行程序, 将无法引用第三方库的头文件. 因为我们自己的库的头文件中会引用这些头文件,
 # 这样当其他可执行程序如果引用了我们的自己的库的头文件, 就会提示找不到第三方库的头文件
-target_link_libraries(datafunction-struct-kvstore  PRIVATE df::common_dependencies)
-add_library(df::datafunction-struct-kvstore  ALIAS datafunction-struct-kvstore )
+target_link_libraries(datafunction-struct-kvstore PRIVATE df::common_dependencies df::utils df::shm df::smalloc)
+target_include_directories(datafunction-struct-kvstore PRIVATE ${DataFunctionSidecar_INCLUDE_DIR})
 
 # Ensure library generates readable stack traces
-target_compile_options(datafunction-struct-kvstore  PUBLIC -fno-omit-frame-pointer)
-target_link_options(datafunction-struct-kvstore  PUBLIC -Wl,--export-dynamic)
+target_compile_options(datafunction-struct-kvstore PUBLIC -fno-omit-frame-pointer)
+target_link_options(datafunction-struct-kvstore PUBLIC -Wl,--export-dynamic)
 
-target_link_libraries(datafunction-struct-kvstore PRIVATE df::utils df::shm)
+add_library(df::datafunction-struct-kvstore ALIAS datafunction-struct-kvstore)

@@ -2,11 +2,11 @@
 // Created by kingdo on 23-3-13.
 //
 
-#include <df/utils/smalloc.h>
+#include <df/smalloc/smalloc.h>
 
 int main() {
     char data[4096];
-    auto p = std::make_shared<df::utils::StaticAllocatableMemory>(data, 4096);
+    auto p = std::make_shared<df::StaticAllocatableMemory>(data, 4096, true);
     std::string start(data, 4096);
 
     char *start_alloc = static_cast<char *>(p->malloc(4000));
