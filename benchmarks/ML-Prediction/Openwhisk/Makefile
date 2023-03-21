@@ -40,5 +40,5 @@ render_action_invoke: render/.render_action_is_deployed
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action update ML-Prediction-sequence --sequence ML-Prediction-resize,ML-Prediction-predict,ML-Prediction-render
 	touch .sequence_action_is_deployed
 
-sequence_action_invoke:
+sequence_action_invoke: .sequence_action_is_deployed
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action invoke --result ML-Prediction-sequence
