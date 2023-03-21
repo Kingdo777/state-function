@@ -38,12 +38,15 @@ static PyGetSetDef bucket_getset[] = {
 
 PyObject *Bucket_get(PyObject *self, PyObject *args);
 
+PyObject *Bucket_get_bytes(PyObject *self, PyObject *args);
+
 PyObject *Bucket_set(PyObject *self, PyObject *args);
 
 PyObject *Bucket_destroy(PyObject *self, PyObject *args);
 
 static PyMethodDef bucket_methods[] = {
         {"get",     (PyCFunction) Bucket_get,     METH_VARARGS, "get value from bucket."},
+        {"get_bytes",     (PyCFunction) Bucket_get_bytes,     METH_VARARGS, "get bytes value from bucket."},
         {"set",     (PyCFunction) Bucket_set,     METH_VARARGS, "set value to bucket."},
         {"destroy", (PyCFunction) Bucket_destroy, METH_VARARGS, "destroy the bucket."},
         {nullptr}};
@@ -131,6 +134,24 @@ PyObject *Bucket_get(PyObject *self, PyObject *args) {
     value_size = ((Bucket *) self)->bucket->get(key, &value_data);
 
     return Py_BuildValue("s#", value_data, value_size);
+}
+
+PyObject *Bucket_get_bytes(PyObject *self, PyObject *args) {
+    const char *key_data;
+    size_t key_size;
+
+    if (!PyArg_ParseTuple(args, "s#", &key_data, &key_size))
+        return nullptr;
+
+    std::string key{key_data, key_size};
+
+
+    void *value_data;
+    size_t value_size;
+
+    value_size = ((Bucket *) self)->bucket->get(key, &value_data);
+
+    return Py_BuildValue("y#", value_data, value_size);
 }
 
 PyObject *Bucket_destroy(PyObject *self, PyObject *args) {
