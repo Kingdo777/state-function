@@ -5,6 +5,7 @@ OPENWHISK_PROJECT_HOME ?= $(HOME_DIR)/IdeaProjects/openwhisk
 WSK_CLI ?= $(OPENWHISK_PROJECT_HOME)/bin/wsk
 WSK_CONFIG_FILE=$(HOME_DIR)/.wskprops
 FAASTLANE_PROJECT_HOME ?= $(HOME_DIR)/PycharmProjects/faastlane
+FAASTLANE_WORK_DIR ?= $(CURDIR)/.faastlane
 
 DOCKER_IMAGE = kingdo/action-python-v2.7
 DOCKER_IMAGE_TAG = latest
@@ -19,8 +20,8 @@ else
 endif
 
 __main__.py: predict.py render.py resize.py utils.py workflow.json
-	python3 $(FAASTLANE_PROJECT_HOME)/composer/generator.py --input . --platform ow
-	cp .faastlane/__main__.py __main__.py
+	FAASTLANE_WORK_DIR=$(FAASTLANE_WORK_DIR) python3 $(FAASTLANE_PROJECT_HOME)/composer/generator.py --input . --platform ow
+	cp $(FAASTLANE_WORK_DIR)/__main__.py __main__.py
 .PHONY: generate-faastlane-runner
 generate-faastlane-runner: __main__.py
 
