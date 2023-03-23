@@ -94,6 +94,11 @@ else ()
     target_link_libraries(common_dependencies INTERFACE PkgConfig::Pistache)
 endif ()
 
+#----------------------- CURL ------------------------------------
+#sudo apt-get install libcurl4-openssl-dev
+find_package(CURL REQUIRED)
+target_link_libraries(common_dependencies INTERFACE CURL::libcurl)
+
 #----------------------- Boost ------------------------------------
 # sudo apt-get install libboost-filesystem-dev
 # 因为boost太大了，不适合使用FetchContent进行安装

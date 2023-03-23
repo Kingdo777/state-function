@@ -9,7 +9,7 @@ from PIL import Image
 
 
 def write():
-    bucket_create = df.create_bucket("Kingdo", 40960)
+    bucket_create = df.create_bucket("kingdo", 40960)
     bucket_create.set("apple", "12")
     bucket_create.set("banana", "13")
     bucket_create.set("mum", "kiss")
@@ -20,7 +20,7 @@ def write():
 
 
 def read(destroy=False):
-    bucket_get = df.get_bucket("Kingdo")
+    bucket_get = df.get_bucket("kingdo")
     print(bucket_get.get("apple"))
     print(bucket_get.get("banana"))
     print(bucket_get.get("mum"))
@@ -80,10 +80,10 @@ if __name__ == '__main__':
 
     # Data-Function
     startTime = 1000 * time.time()
-    bucket = df.create_bucket("Kingdo", 4096 * 300)
+    bucket = df.create_bucket("kingdo", 4096 * 300)
     img_npy_pickle = pickle.dumps(img_npy)
     bucket.set("body", img_npy_pickle)
-    bucket_get = df.get_bucket("Kingdo")
+    bucket_get = df.get_bucket("kingdo")
     serialized_img_npy_2 = bucket_get.get_bytes("body")
     img_npy_2 = pickle.loads(serialized_img_npy_2)
     endTime = 1000 * time.time()

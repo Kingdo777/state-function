@@ -7,6 +7,8 @@
 
 #include <df/smalloc/smalloc.h>
 #include <df/shm/shm.h>
+#include <df/utils/network.h>
+#include <df/utils/json.h>
 
 #include <utility>
 #include <set>
@@ -32,13 +34,21 @@ namespace df::dataStruct::KV_Store {
             DF_CHECK_WITH_EXIT(bucket_size >= PAGE_SIZE && bucket_size % PAGE_SIZE == 0,
                                "Length must be a multiple of pages.");
 
-            /// TODO remote request DF-Container
-            /// DFContainer-Manager allocate key, and create&&send to DF-Container
-            key_t SHM_KEY = 0x7777;
-            /// DF-Container Create the shm
-            auto datafunctionContainer_shm = SHM::createSHM(SHM_KEY, bucket_size);
-            //// after create the shm, DFContainer-Manager send the Key to Worker-Container
-            /// ################################################################
+            auto result = utils::POST("http://222.20.94.67:7070/create",
+                                      fmt::format(R"({{"name":"{}","size":"{}"}})", bucket_name, size), 60);
+            df::utils::Json json;
+            json.Parse(result);
+            DF_CHECK_WITH_EXIT(json.available, "POST to getSHM, the result is not a JSON object");
+            DF_CHECK_WITH_EXIT(json.HasMember("status") && json["status"].IsString(),
+                               "POST to getSHM, the result status is undefined");
+            DF_CHECK_WITH_EXIT(json.HasMember("message"),
+                               "POST to getSHM, the result message is undefined");
+            DF_CHECK_WITH_EXIT(json["status"] == "OK", fmt::format("POST to getSHM, the result status is Error, {}",
+                                                                   json["message"].GetString()));
+            DF_CHECK_WITH_EXIT(json["message"].IsObject(), "POST to getSHM, the result message is not a Object");
+
+            auto SHM_KEY = key_t(strtol(json["message"]["key"].GetString(), nullptr, 10));
+            shm = SHM::getSHM(SHM_KEY);
 
             /// get shm bey the Key received form DFContainer-Manager
             shm = SHM::getSHM(SHM_KEY);
@@ -50,11 +60,20 @@ namespace df::dataStruct::KV_Store {
         }
 
         explicit DataFunctionKVStoreBucket(std::string name) : bucket_name(std::move(name)), bucket_size(0) {
-            /// TODO remote request DF-Container
-            /// DFContainer-Manager get the key by name,send to Worker-Container;
-            key_t SHM_KEY = 0x7777;
-            /// ################################################################
+            auto result = utils::POST("http://222.20.94.67:7070/get",
+                                      fmt::format(R"({{"name":"{}"}})", bucket_name), 60);
+            df::utils::Json json;
+            json.Parse(result);
+            DF_CHECK_WITH_EXIT(json.available, "POST to getSHM, the result is not a JSON object");
+            DF_CHECK_WITH_EXIT(json.HasMember("status") && json["status"].IsString(),
+                               "POST to getSHM, the result status is undefined");
+            DF_CHECK_WITH_EXIT(json.HasMember("message"),
+                               "POST to getSHM, the result message is undefined");
+            DF_CHECK_WITH_EXIT(json["status"] == "OK", fmt::format("POST to getSHM, the result status is Error, {}",
+                                                                   json["message"].GetString()));
+            DF_CHECK_WITH_EXIT(json["message"].IsObject(), "POST to getSHM, the result message is not a Object");
 
+            auto SHM_KEY = key_t(strtol(json["message"]["key"].GetString(), nullptr, 10));
             shm = SHM::getSHM(SHM_KEY);
             bucket_size = shm->getSHMSize();
 
@@ -124,8 +143,19 @@ namespace df::dataStruct::KV_Store {
         }
 
         void destroy() {
-            /// TODO
-            shm->destroy();
+            auto result = utils::POST("http://222.20.94.67:7070/destroy",
+                                      fmt::format(R"({{"name":"{}"}})", bucket_name), 60);
+            df::utils::Json json;
+            json.Parse(result);
+            DF_CHECK_WITH_EXIT(json.available, "POST to destroySHM, the result is not a JSON object");
+            DF_CHECK_WITH_EXIT(json.HasMember("status") && json["status"].IsString(),
+                               "POST to destroySHM, the result status is undefined");
+            DF_CHECK_WITH_EXIT(json.HasMember("message"),
+                               "POST to destroySHM, the result message is undefined");
+            DF_CHECK_WITH_EXIT(json["status"] == "OK", fmt::format("POST to destroySHM, the result status is Error, {}",
+                                                                   json["message"].GetString()));
+            DF_CHECK_WITH_EXIT(json["message"].IsString(), "POST to destroySHM, the result message is not a Object");
+
             destroyed = true;
         }
 

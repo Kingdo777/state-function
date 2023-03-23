@@ -4,7 +4,7 @@
 #include <df/utils/log.h>
 
 
-// We're always on x86_64
+#define PAGE_SIZE 4096
 
 #ifndef DataFunction_FILE_CREAT_MODE
 #define DataFunction_FILE_CREAT_MODE 0664

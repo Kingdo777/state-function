@@ -6,7 +6,7 @@ LIB_DIRECTORY = "/home/kingdo/CLionProjects/DataFunction/cmake-build-debug/out/l
 
 module = Extension('datafunction',
                    include_dirs=[INCLUDE_DIRECTORY, DataFunctionSidecar_INCLUDE],
-                   libraries=['utils', 'shm', 'smalloc', 'datafunction-struct-kvstore'],
+                   libraries=['utils', 'shm', 'smalloc', 'datafunction-struct-kvstore', "curl"],
                    library_dirs=[LIB_DIRECTORY],
                    extra_compile_args=['-std=c++20'],
                    sources=['datafunction.cpp'])

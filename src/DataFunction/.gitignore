@@ -1,0 +1,6 @@
+venv/
+virtualenv/
+*.zip
+.action_is_newest
+__main__.py
+.virtualenv_is_update
