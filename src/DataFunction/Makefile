@@ -10,6 +10,13 @@ DOCKER_IMAGE_TAG = latest
 
 ACTION_NAME = DataFunction
 
+BUILD_MODE ?= PURE_PYTHON_FILE
+ifeq ("$(BUILD_MODE)","PURE_PYTHON_FILE")
+	ACTION_CODE = action/__main__.py
+else
+	ACTION_CODE = DataFunction-Virtualenv.zip
+endif
+
 .virtualenv_is_update: IPC-py-extend/ipc.cpp IPC-py-extend/ShareMemory.h IPC-py-extend/setup.py
 	cd IPC-py-extend && python3.10 setup.py build
 	docker run --rm -v ".:/DataFunction" --entrypoint bash $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) \
@@ -30,8 +37,8 @@ DataFunction-Virtualenv.zip: action/__main__.py .virtualenv_is_update
 .PHONY: package-action
 package-action: DataFunction-Virtualenv.zip
 
-.action_is_newest: DataFunction-Virtualenv.zip
-	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action update $(ACTION_NAME) DataFunction-Virtualenv.zip \
+.action_is_newest: $(ACTION_CODE)
+	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action update $(ACTION_NAME)  $(ACTION_CODE) \
 		--docker $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) -m 1024 -t 300000
 	touch .action_is_newest
 
@@ -59,6 +66,10 @@ invoke-action-destroy-shm: .shm_is_create
  destroy-action: .action_is_newest
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete $(ACTION_NAME)
 	rm .action_is_newest
+
+.PHONY: update-action
+ update-action: .action_is_newest
+	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action update $(ACTION_NAME) -m 1024
 
 
 .PHONY: clear

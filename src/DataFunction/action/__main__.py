@@ -1,7 +1,10 @@
+import time
+
 import ipc
 
 
 def main(event):
+    start = time.time() * 1000
     if "op" not in event:
         return {
             "statusCode": "400",
@@ -27,7 +30,8 @@ def main(event):
         shm = ipc.create_shm(key, size)
         return {
             "statusCode": "200",
-            "body": "OK"
+            "body": "OK",
+            "create_shm_use:": "{:.2f}ms".format(time.time() * 1000 - start)
         }
 
     if op == "destroy":
@@ -41,12 +45,13 @@ def main(event):
         shm.destroy()
         return {
             "statusCode": "200",
-            "body": "OK"
+            "body": "OK",
+            "destroy_shm_use:": "{:.2f}ms".format(time.time() * 1000 - start)
         }
 
     response = {
-        "statusCode": "200",
-        "body": "Success"
+        "statusCode": "400",
+        "body": "Unreachable"
     }
     return response
 
