@@ -7,16 +7,6 @@ from PIL import Image
 import pickle
 import datafunction as df
 
-FILE_DIR = '/tmp'
-BUCKET = 'kingdo-serverless-test'
-FOLDER = 'faastlane/prediction-pipeline'
-IMAGE = 'img-src/panda.jpg'
-RESIZE_IMAGE = 'img-resize/panda-resize.npy'
-
-AWS_ACCESS_KEY_ID = "AKIAW4QJVNK77MTUELIH"
-AWS_SECRET_KEY_ID = "UsFFYSX1t1klsi1+6p83+7wyhk9DWkK1sJiNTxAX"
-S3_REGION_NAME = "us-west-2"
-
 
 def timestamp(response, event, execute_start_time, execute_end_time, transport_start_time, transport_end_time):
     stamp_begin = 1000 * time.time()
@@ -36,7 +26,7 @@ def main(event):
     # **********************************************************************************************************************
     execute_start_time = 1000 * time.time()
     image = Image.open("data/image.jpg")
-    img = np.array(image.resize((224, 224))).astype(np.float) / 128 - 1
+    img = np.array(image.resize((224, 224))).astype(float) / 128 - 1
     resize_img = img.reshape(1, 224, 224, 3)
 
     response = {"statusCode": 200}

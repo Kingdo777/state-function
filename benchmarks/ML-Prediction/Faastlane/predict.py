@@ -1,4 +1,4 @@
-import json
+import json, os
 import numpy as np
 import tensorflow as tf
 import time
@@ -18,11 +18,11 @@ def main(event):
     img = np.array(body['resize_img'])
     del body
 
-    gd = tf.GraphDef.FromString(open('data/mobilenet_v2_1.0_224_frozen.pb', 'rb').read())
+    gd = tf.compat.v1.GraphDef.FromString(open('data/mobilenet_v2_1.0_224_frozen.pb', 'rb').read())
 
     inp, predictions = tf.import_graph_def(gd, return_elements=['input:0', 'MobilenetV2/Predictions/Reshape_1:0'])
 
-    with tf.Session(graph=inp.graph):
+    with tf.compat.v1.Session(graph=inp.graph):
         x = predictions.eval(feed_dict={inp: img})
 
     response = {

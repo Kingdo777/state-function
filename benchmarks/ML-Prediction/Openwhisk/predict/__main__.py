@@ -10,7 +10,7 @@ FILE_DIR = '/tmp'
 BUCKET = 'kingdo-serverless-test'
 FOLDER = 'faastlane/prediction-pipeline'
 IMAGE = 'img-src/panda.jpg'
-RESIZE_IMAGE = 'img-resize/panda-resize.jpg'
+RESIZE_IMAGE = 'img-resize/panda-resize.npy'
 
 
 def timestamp(response, event, execute_start_time, execute_end_time, transport_start_time, transport_end_time):

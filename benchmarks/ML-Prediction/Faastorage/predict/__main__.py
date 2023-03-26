@@ -4,12 +4,6 @@ import tensorflow as tf
 import time
 import datafunction as df
 
-FILE_DIR = '/tmp'
-BUCKET = 'kingdo-serverless-test'
-FOLDER = 'faastlane/prediction-pipeline'
-IMAGE = 'img-src/panda.jpg'
-RESIZE_IMAGE = 'img-resize/panda-resize.jpg'
-
 
 def timestamp(response, event, execute_start_time, execute_end_time, transport_start_time, transport_end_time):
     stamp_begin = 1000 * time.time()
@@ -29,7 +23,7 @@ def main(event):
     # #####################################################################################################################
     transport_start_time = 1000 * time.time()
     bucket_get = df.get_bucket("kingdo")
-    resize_pickle = bucket_get.get("body")
+    resize_pickle = bucket_get.get_bytes("body")
     transport_end_time = 1000 * time.time()
     # ######################################################################################################################
 

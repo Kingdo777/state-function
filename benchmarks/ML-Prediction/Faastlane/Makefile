@@ -7,7 +7,7 @@ WSK_CONFIG_FILE=$(HOME_DIR)/.wskprops
 FAASTLANE_PROJECT_HOME ?= $(HOME_DIR)/PycharmProjects/faastlane
 FAASTLANE_WORK_DIR ?= $(CURDIR)/.faastlane
 
-DOCKER_IMAGE = kingdo/action-python-v2.7
+DOCKER_IMAGE = kingdo/action-python-v3.10
 DOCKER_IMAGE_TAG = latest
 
 ACTION_NAME = ML-Prediction-Faastlane
@@ -57,6 +57,6 @@ invoke-action: .action_is_newest
 clear:
 	sudo rm -rf virtualenv
 	rm -rf ML-Prediction.zip
-	rm -rf __main__.py
+	rm -rf __main__.py .action_is_newest
 	rm -rf .faastlane
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete $(ACTION_NAME)

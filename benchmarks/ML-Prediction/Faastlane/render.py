@@ -30,3 +30,10 @@ def main(event):
         time_statistics["timeStampCost"])
 
     return response
+
+
+if __name__ == '__main__':
+    import predict
+    import resize
+
+    print(main(predict.main(resize.main({}))))

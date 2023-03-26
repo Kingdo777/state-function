@@ -39,7 +39,7 @@ def main(event):
     # **********************************************************************************************************************
     execute_start_time = 1000 * time.time()
     image = Image.open("data/image.jpg")
-    img = np.array(image.resize((224, 224))).astype(np.float) / 128 - 1
+    img = np.array(image.resize((224, 224))).astype(float) / 128 - 1
     resize_img = img.reshape(1, 224, 224, 3)
 
     response = {"statusCode": 200}

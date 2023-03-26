@@ -3,7 +3,7 @@ OPENWHISK_PROJECT_HOME ?= $(HOME_DIR)/IdeaProjects/openwhisk
 WSK_CLI ?= $(OPENWHISK_PROJECT_HOME)/bin/wsk
 WSK_CONFIG_FILE=$(HOME_DIR)/.wskprops
 
-DOCKER_IMAGE = kingdo/action-python-v2.7
+DOCKER_IMAGE = kingdo/action-python-v3.10
 DOCKER_IMAGE_TAG = latest
 
 
@@ -45,6 +45,7 @@ sequence_action_invoke: .sequence_action_is_deployed
 
 clean:
 	rm -rf .sequence_action_is_deployed resize/.resize_action_is_deployed predict/.predict_action_is_deployed render/.render_action_is_deployed
+	rm -rf predict/predict_action.zip resize/resize_action.zip
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete ML-Prediction-Faastorage-sequence
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete ML-Prediction-Faastorage-render
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete ML-Prediction-Faastorage-predict
