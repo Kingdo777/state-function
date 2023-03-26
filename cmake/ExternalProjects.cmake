@@ -105,14 +105,6 @@ target_link_libraries(common_dependencies INTERFACE CURL::libcurl)
 find_package(Boost COMPONENTS filesystem REQUIRED)
 target_link_libraries(common_dependencies INTERFACE Boost::filesystem)
 
-#----------------------- CPython ------------------------------------
-# sudo apt-get install python3.10-dev
-# pkg-config --list-all | grep python
-pkg_check_modules(python-3.10 REQUIRED python-3.10)
-target_link_libraries(common_dependencies INTERFACE python3.10)
-message(STATUS ${python-3.10_INCLUDE_DIRS})
-target_include_directories(common_dependencies INTERFACE ${python-3.10_INCLUDE_DIRS})
-
 #---------------------------其他库-------------------------------------
 target_link_libraries(common_dependencies INTERFACE
         pthread

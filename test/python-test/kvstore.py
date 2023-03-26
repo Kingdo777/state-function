@@ -79,16 +79,15 @@ if __name__ == '__main__':
     assert img_npy_1.all() == img_npy.all()
 
     # Data-Function
-    bucket = df.create_bucket("kingdo", 4096 * 300)
-    img_npy_pickle = pickle.dumps(img_npy)
-    
     startTime = 1000 * time.time()
+    img_npy_pickle = pickle.dumps(img_npy)
+    bucket = df.create_bucket("kingdo", 1024 * 1024 * 5)
     bucket.set("body", img_npy_pickle)
     bucket_get = df.get_bucket("kingdo")
     serialized_img_npy_2 = bucket_get.get_bytes("body")
+    img_npy_2 = pickle.loads(serialized_img_npy_2)
     endTime = 1000 * time.time()
 
-    img_npy_2 = pickle.loads(serialized_img_npy_2)
     print("bucket set&&get use time {}ms".format(endTime - startTime))
 
     assert img_npy_2.all() == img_npy.all()

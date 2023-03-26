@@ -42,3 +42,10 @@ render_action_invoke: render/.render_action_is_deployed
 
 sequence_action_invoke: .sequence_action_is_deployed
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action invoke --result ML-Prediction-sequence
+
+clean:
+	rm .sequence_action_is_deployed resize/.resize_action_is_deployed predict/.predict_action_is_deployed render/.render_action_is_deployed
+	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete ML-Prediction-sequence
+	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action invoke --result ML-Prediction-render
+	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action invoke --result ML-Prediction-predict
+	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action invoke --result ML-Prediction-resize
