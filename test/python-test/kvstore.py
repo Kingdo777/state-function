@@ -5,6 +5,7 @@ import datafunction as df
 import pickle
 import time
 import numpy as np
+import redis
 from PIL import Image
 
 
@@ -61,35 +62,43 @@ def read_write_test():
 if __name__ == '__main__':
     # read_write_test()
 
-    image = Image.open("/home/kingdo/CLionProjects/DataFunction/benchmarks/ML-Prediction/Faastlane/data/image.jpg")
-    image_resize = image.resize((224, 224))
-    img_npy = np.asarray(image_resize).astype(float) / 128 - 1
+    image = Image.open("data/image2.jpg")
+    img = np.array(image.resize((224, 224))).astype(float) / 128 - 1
+    img_npy = img.reshape(1, 224, 224, 3)
 
     # startTime = 1000 * time.time()
     # img_npy = np.zeros((1024, 1014, 512))
 
     # Faastlane
-    startTime = 1000 * time.time()
-    response = {"body": img_npy.tolist()}
-    json_data = json.dumps(response)
-    img_npy_1 = np.asarray(json.loads(json_data)['body'])
-    endTime = 1000 * time.time()
-    print("json dumps&&loads use time {}ms".format(endTime - startTime))
-
-    assert img_npy_1.all() == img_npy.all()
+    # startTime = 1000 * time.time()
+    # response = {"body": img_npy.tolist()}
+    # json_data = json.dumps(response)
+    # img_npy_1 = np.asarray(json.loads(json_data)['body'])
+    # endTime = 1000 * time.time()
+    # print("json dumps&&loads use time {}ms".format(endTime - startTime))
+    # assert img_npy_1.all() == img_npy.all()
 
     # Data-Function
-    startTime = 1000 * time.time()
     img_npy_pickle = pickle.dumps(img_npy)
-    bucket = df.create_bucket("kingdo", 1024 * 1024 * 5)
+    bucket = df.create_bucket("kingdo", (int(len(img_npy_pickle) / 1024 / 1024) + 1) * 1024 * 1024)
+    startTime = 1000 * time.time()
     bucket.set("body", img_npy_pickle)
     bucket_get = df.get_bucket("kingdo")
     serialized_img_npy_2 = bucket_get.get_bytes("body")
-    img_npy_2 = pickle.loads(serialized_img_npy_2)
     endTime = 1000 * time.time()
-
+    img_npy_2 = pickle.loads(serialized_img_npy_2)
     print("bucket set&&get use time {}ms".format(endTime - startTime))
-
     assert img_npy_2.all() == img_npy.all()
-
     bucket.destroy()
+
+    # Redis
+    img_npy_pickle = pickle.dumps(img_npy)
+    redis_set_client = redis.Redis(host='222.20.94.67', port=6379, db=0)
+    startTime = 1000 * time.time()
+    redis_set_client.set("body", img_npy_pickle)
+    redis_get_client = redis.Redis(host='222.20.94.67', port=6379, db=0)
+    serialized_img_npy_3 = redis_get_client.get("body")
+    endTime = 1000 * time.time()
+    img_npy_3 = pickle.loads(serialized_img_npy_3)
+    print("redis set&&get use time {}ms".format(endTime - startTime))
+    assert img_npy_3.all() == img_npy.all()
