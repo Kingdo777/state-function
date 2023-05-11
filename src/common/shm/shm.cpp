@@ -20,7 +20,7 @@ namespace df {
             perror("shmdt error:");
             DF_CHECK_WITH_EXIT(false, "Detache SHM Wrong");
         }
-        SPDLOG_INFO("Destruct SHM object");
+        SPDLOG_DEBUG("Destruct SHM object");
     }
 
     df::SHM::SHM(key_t key_, size_t size_) : key(key_), size(size_), id(0) {

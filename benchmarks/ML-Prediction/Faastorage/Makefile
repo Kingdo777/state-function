@@ -20,7 +20,7 @@ resize_action_invoke: resize/.resize_action_is_deployed
 predict/.predict_action_is_deployed: predict/__main__.py
 	cd predict && zip -r predict_action data __main__.py
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action update ML-Prediction-Faastorage-predict predict/predict_action.zip \
-    		--docker $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) -m 1024 -t 300000
+    		--docker $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) -m 10240 -t 300000
 	touch predict/.predict_action_is_deployed
 .PHONY: predict_action_invoke
 predict_action_invoke: predict/.predict_action_is_deployed
@@ -31,7 +31,7 @@ render/.render_action_is_deployed: render/__main__.py
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action update ML-Prediction-Faastorage-render render/__main__.py \
     		--docker $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) -m 1024 -t 300000
 	touch render/.render_action_is_deployed
-.PHONY: render_action_invoke
+.PHONY: render_action_i
 render_action_invoke: render/.render_action_is_deployed
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action invoke --result ML-Prediction-Faastorage-render --param-file render/param.json
 

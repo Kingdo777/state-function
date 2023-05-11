@@ -43,7 +43,7 @@ pack-action: ML-Prediction.zip
 
 .action_is_newest: $(ACTION_ZIP)
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action update $(ACTION_NAME) $(ACTION_ZIP) \
-		--docker $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) -m 1024 -t 300000
+		--docker $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) -m 10240 -t 300000
 	touch .action_is_newest
 
 .PHONY: update-action

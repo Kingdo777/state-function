@@ -43,6 +43,8 @@ def main(event):
     execute_end_time = 1000 * time.time()
     # **********************************************************************************************************************
 
+    response["predictExecuteTime"] = execute_end_time - execute_start_time
+    response["resizeExecuteTime"] = event["resizeExecuteTime"]
     return timestamp(response, event, execute_start_time, execute_end_time, transport_start_time, transport_end_time)
 
 

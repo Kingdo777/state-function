@@ -33,8 +33,42 @@ void read(bool destroy = false) {
         bucket->destroy();
 }
 
+int create_test() {
+    auto start = std::chrono::high_resolution_clock::now();
+    write();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    SPDLOG_INFO("write use : {}ms", duration.count());
+
+    start = std::chrono::high_resolution_clock::now();
+    read();
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    SPDLOG_INFO("read use : {}ms", duration.count());
+
+    for (int i: {1, 128, 256, 5 * 256, 10 * 256}) {
+        int size = i * 4096;
+        std::string size_s = fmt::format("{}KB", size / 1024);
+        start = std::chrono::high_resolution_clock::now();
+        auto bucket = DataFunctionKVStoreBucket::CreateBucket("kingdo", size);
+        end = std::chrono::high_resolution_clock::now();
+        duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        SPDLOG_INFO("Create {} use : {}ms", size_s, duration.count());
+
+    }
+
+
+//    auto bucket = DataFunctionKVStoreBucket::getBucket("kingdo");
+
+    return 0;
+}
+
 int main() {
     df::utils::initLog("DataFunctionKVStoreBucketTest");
+
+    create_test();
+
+    return 0;
 
     write();
 

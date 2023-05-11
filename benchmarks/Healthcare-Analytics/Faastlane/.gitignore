@@ -1,0 +1,6 @@
+.faastlane
+virtualenv
+venv*/
+*.zip
+./__main__.py
+.action_is_newest

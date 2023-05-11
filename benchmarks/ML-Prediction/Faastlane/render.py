@@ -28,6 +28,12 @@ def main(event):
         time_statistics["workflowEndTime"] - time_statistics["workflowStartTime"] -
         time_statistics["duration"] -
         time_statistics["timeStampCost"])
+    response["executeTime-"] = {
+        "all": "{:.2f} ms".format(time_statistics["duration"]),
+        "resize": "{:.2f} ms".format(event["resizeExecuteTime"]),
+        "predict": "{:.2f} ms".format(event["predictExecuteTime"]),
+        "render": "{:.2f} ms".format(endTime - startTime)
+    }
 
     return response
 

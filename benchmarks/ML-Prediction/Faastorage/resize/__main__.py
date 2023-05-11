@@ -31,17 +31,18 @@ def main(event):
 
     response = {"statusCode": 200}
     serialized_resize = pickle.dumps(resize_img)
-    bucket = df.create_bucket("kingdo", 1024 * 1024 * 5)
     execute_end_time = 1000 * time.time()
     # **********************************************************************************************************************
 
     # use DataFunction to communicate messages
     # ######################################################################################################################
     transport_start_time = execute_end_time
+    bucket = df.create_bucket("kingdo", 1024 * 1024 * 5)
     bucket.set("body", serialized_resize)
     transport_end_time = 1000 * time.time()
     # ######################################################################################################################
 
+    response["resizeExecuteTime"] = execute_end_time - execute_start_time
     return timestamp(response, event, execute_start_time, execute_end_time, transport_start_time, transport_end_time)
 
 

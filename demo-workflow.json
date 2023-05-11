@@ -1,0 +1,20 @@
+{
+  "Comment": "A Hello World example of the Amazon States Language using Pass states",
+  "StartAt": "preprocessing",
+  "States": {
+    "preprocessing": {
+      "Type": "Task",
+      "Next": "analysis"
+    },
+    "analysis": {
+      "Type": "Parallel",
+      "Branches": {
+      },
+      "Next": "merge"
+    },
+    "merge": {
+      "Type": "Task",
+      "Next": "analysis"
+    }
+  }
+}

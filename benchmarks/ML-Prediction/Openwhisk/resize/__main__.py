@@ -11,13 +11,13 @@ from PIL import Image
 import pickle
 
 FILE_DIR = '/tmp'
-BUCKET = 'kingdo-serverless-test'
+BUCKET = 'kingdo-serverless'
 FOLDER = 'faastlane/prediction-pipeline'
 IMAGE = 'img-src/panda.jpg'
 RESIZE_IMAGE = 'img-resize/panda-resize.npy'
 
-AWS_ACCESS_KEY_ID = "AKIAW4QJVNK77MTUELIH"
-AWS_SECRET_KEY_ID = "UsFFYSX1t1klsi1+6p83+7wyhk9DWkK1sJiNTxAX"
+AWS_ACCESS_KEY_ID = "AKIA2EGUEMCVKZGPBGIC"
+AWS_SECRET_KEY_ID = "w9zEt8hTXOkKKbOIc+gWC8FaXfYAkm23b8YhOQ/3"
 S3_REGION_NAME = "us-west-2"
 
 
@@ -53,11 +53,12 @@ def main(event):
     s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
                       aws_secret_access_key=AWS_SECRET_KEY_ID,
                       region_name=S3_REGION_NAME,
-                      config=Config(proxies={'https': 'http://222.20.94.67:7890'}))
+                      config=Config(proxies={'https': 'http://192.168.162.239:7890'}))
 
     s3response = s3.put_object(Bucket=BUCKET, Key=os.path.join(FOLDER, RESIZE_IMAGE), Body=serialized_resize)
     transport_end_time = 1000 * time.time()
     # ######################################################################################################################
+    response["end"] = 1000 * time.time()
     return timestamp(response, event, execute_start_time, execute_end_time, transport_start_time, transport_end_time)
 
 

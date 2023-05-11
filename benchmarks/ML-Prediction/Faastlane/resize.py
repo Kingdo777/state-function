@@ -22,5 +22,6 @@ def main(event):
     }
 
     endTime = 1000 * time.time()
+    response["resizeExecuteTime"] = endTime - startTime
 
     return timestamp(response, event, startTime, endTime)
