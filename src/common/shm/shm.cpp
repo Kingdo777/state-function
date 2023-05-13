@@ -25,7 +25,7 @@ namespace df {
 
     df::SHM::SHM(key_t key_, size_t size_) : key(key_), size(size_), id(0) {
         DF_CHECK_WITH_EXIT(size >= PAGE_SIZE && size % PAGE_SIZE == 0, "Length must be a multiple of pages.");
-        if ((id = shmget(key, size, 0644 | IPC_CREAT | IPC_EXCL)) < 0) {
+        if ((id = shmget(key, size, 0666 | IPC_CREAT | IPC_EXCL)) < 0) {
             perror("shmget error:");
             DF_CHECK_WITH_EXIT(false, "Create SHM Wrong");
         }
