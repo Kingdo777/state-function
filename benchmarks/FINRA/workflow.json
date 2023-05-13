@@ -1,0 +1,217 @@
+{
+  "Comment": "A Hello World example of the Amazon States Language using Pass states",
+  "StartAt": "FetchData4",
+  "States": {
+    "FetchData4": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "States": {
+            "lastpx0": {
+              "Resource": "lastpx",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "lastpx0"
+        },
+        {
+          "States": {
+            "side0": {
+              "Resource": "side",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "side0"
+        },
+        {
+          "States": {
+            "marketdata0": {
+              "Resource": "marketdata",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "marketdata0"
+        },
+        {
+          "States": {
+            "trddate0": {
+              "Resource": "trddate",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "trddate0"
+        },
+        {
+          "States": {
+            "volume0": {
+              "Resource": "volume",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "volume0"
+        },
+        {
+          "States": {
+            "marketdata1": {
+              "Resource": "marketdata",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "marketdata1"
+        },
+        {
+          "States": {
+            "lastpx1": {
+              "Resource": "lastpx",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "lastpx1"
+        },
+        {
+          "States": {
+            "side1": {
+              "Resource": "side",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "side1"
+        },
+        {
+          "States": {
+            "trddate1": {
+              "Resource": "trddate",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "trddate1"
+        },
+        {
+          "States": {
+            "volume1": {
+              "Resource": "volume",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "volume1"
+        },
+        {
+          "States": {
+            "marketdata2": {
+              "Resource": "marketdata",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "marketdata2"
+        },
+        {
+          "States": {
+            "lastpx2": {
+              "Resource": "lastpx",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "lastpx2"
+        },
+        {
+          "States": {
+            "side2": {
+              "Resource": "side",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "side2"
+        },
+        {
+          "States": {
+            "trddate2": {
+              "Resource": "trddate",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "trddate2"
+        },
+        {
+          "States": {
+            "volume2": {
+              "Resource": "volume",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "volume2"
+        },
+        {
+          "States": {
+            "marketdata3": {
+              "Resource": "marketdata",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "marketdata3"
+        },
+        {
+          "States": {
+            "lastpx3": {
+              "Resource": "lastpx",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "lastpx3"
+        },
+        {
+          "States": {
+            "side3": {
+              "Resource": "side",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "side3"
+        },
+        {
+          "States": {
+            "trddate3": {
+              "Resource": "trddate",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "trddate3"
+        },
+        {
+          "States": {
+            "volume3": {
+              "Resource": "volume",
+              "Type": "Task",
+              "End": true
+            }
+          },
+          "StartAt": "volume3"
+        }
+      ],
+      "Next": "CheckMarginBalance"
+    },
+    "CheckMarginBalance": {
+      "Type": "Task",
+      "Resource": "marginBalance",
+      "End": true
+    }
+  }
+}

@@ -1,0 +1,6 @@
+*_action_is_deployed
+*.zip
+.idea
+__main__.py
+result-*
+.faastlane

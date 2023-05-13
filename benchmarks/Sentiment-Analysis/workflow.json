@@ -1,0 +1,26 @@
+{
+  "Comment": "A Hello World example of the Amazon States Language using Pass states",
+  "StartAt": "readcsv",
+  "States": {
+    "readcsv": {
+      "Type": "Task",
+      "Resource": "readcsv",
+      "Next": "sentiment"
+    },
+    "sentiment": {
+      "Type": "Task",
+      "Resource": "sentiment",
+      "Next": "writetoDB"
+    },
+    "writetoDB": {
+      "Type": "Task",
+      "Resource": "WritetoDB",
+      "Next": "publishsns"
+    },
+    "publishsns": {
+      "Type": "Task",
+      "Resource": "publishsns",
+      "End": true
+    }
+  }
+}
