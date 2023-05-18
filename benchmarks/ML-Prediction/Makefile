@@ -100,7 +100,7 @@ action_invoke_Openwhisk: .sequence_action_is_deployed
 clean:
 	rm -rf .sequence_action_is_deployed .resize_action_is_deployed .predict_action_is_deployed .render_action_is_deployed .faastlane_action_is_deployed
 	rm -rf __main__.py .faastlane
-	rm -rf result-*
+	# rm -rf result-*
 	rm -rf predict_action.zip resize_action.zip $(ACTION_ZIP)
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete ML-Prediction-Three-sequence
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete ML-Prediction-Three-render

@@ -9,7 +9,7 @@ import redis
 import datafunction as df
 
 BUCKET = 'kingdo-serverless'
-IMG_KEY = 'faastlane/prediction-pipeline/img-resize/{}.npy'
+File_KEY = 'faastlane/healthycare/{}'
 
 AWS_ACCESS_KEY_ID = "AKIA2EGUEMCVKZGPBGIC"
 AWS_SECRET_KEY_ID = "w9zEt8hTXOkKKbOIc+gWC8FaXfYAkm23b8YhOQ/3"
@@ -68,7 +68,10 @@ def main(event):
     elif op == "FT":
         pass
     else:
-        pass
+        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_KEY_ID,
+                          region_name=S3_REGION_NAME,
+                          config=Config(proxies={'https': 'http://192.168.162.239:7890'}))
     init_end_time = 1000 * time.time()
 
     execute_start_time = 1000 * time.time()
@@ -85,7 +88,7 @@ def main(event):
     if op == "FT":
         serialize_entity = json.dumps({"message": event['message'], "entities": entities_response})
     elif op == "OW":
-        serialize_entity = {"message": event['message'], "entities": entities_response}
+        serialize_entity = pickle.dumps({"message": event['message'], "entities": entities_response})
     else:
         serialize_entity = pickle.dumps(entities_response)
     print(len(serialize_entity) / 1024)
@@ -105,7 +108,7 @@ def main(event):
     elif op == "FT":
         response["body"] = serialize_entity
     else:
-        response["body"] = serialize_entity
+        s3.put_object(Bucket=BUCKET, Key=File_KEY.format("body"), Body=serialize_entity)
     transport_end_time = 1000 * time.time()
 
     response["endTime"] = 1000 * time.time()
@@ -122,12 +125,10 @@ if __name__ == "__main__":
         "op": "OFC"
     }))
 
-    result = main({
+    print(main({
         "message": "Pt is 87 yo woman, highschool teacher with past medical history that includes   - status post cardiac catheterization in April 2019.She presents today with palpitations and chest pressure.HPI : Sleeping trouble on present dosage of Clonidine. Severe Rash  on face and leg, slightly itchy  Meds : Vyvanse 50 mgs po at breakfast daily,             Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs HEENT : Boggy inferior turbinates, No oropharyngeal lesion Lungs : clear Heart : Regular rhythm Skin :  Mild erythematous eruption to hairline Follow-up as scheduled",
         "op": "OW"
-    })
-    result.pop("body")
-    print(result)
+    }))
 
     result = main({
         "message": "Pt is 87 yo woman, highschool teacher with past medical history that includes   - status post cardiac catheterization in April 2019.She presents today with palpitations and chest pressure.HPI : Sleeping trouble on present dosage of Clonidine. Severe Rash  on face and leg, slightly itchy  Meds : Vyvanse 50 mgs po at breakfast daily,             Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs HEENT : Boggy inferior turbinates, No oropharyngeal lesion Lungs : clear Heart : Regular rhythm Skin :  Mild erythematous eruption to hairline Follow-up as scheduled",

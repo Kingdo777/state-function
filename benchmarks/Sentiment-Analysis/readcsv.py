@@ -11,7 +11,7 @@ import redis
 import datafunction as df
 
 BUCKET = 'kingdo-serverless'
-IMG_KEY = 'faastlane/prediction-pipeline/img-resize/{}.npy'
+File_KEY = 'faastlane/sentiment/{}'
 
 AWS_ACCESS_KEY_ID = "AKIA2EGUEMCVKZGPBGIC"
 AWS_SECRET_KEY_ID = "w9zEt8hTXOkKKbOIc+gWC8FaXfYAkm23b8YhOQ/3"
@@ -33,6 +33,8 @@ def timestamp(response, event,
         response['requestTime'] = prior_request_time + start_time - event['endTime']
     else:
         response['requestTime'] = 0
+    print("requestTime:{}".format(response['requestTime']))
+
 
     prior_execute_time = event['executeTime'] if 'executeTime' in event else 0
     response['executeTime'] = prior_execute_time + execute_time
@@ -63,14 +65,18 @@ def main(event):
     if op == "OFC":
         redis_client = redis.Redis(host='222.20.94.67', port=6379, db=0)
     elif op == "CB":
-        bucket = df.create_bucket("kingdo", 4096 * 1)
+        bucket = df.create_bucket("kingdo", 4096 * 763)
     elif op == "FT":
         pass
     else:
-        pass
+        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_KEY_ID,
+                          region_name=S3_REGION_NAME,
+                          config=Config(proxies={'https': 'http://192.168.162.239:7890'}))
     init_time += 1000 * time.time() - init_start_time
 
     execute_start_time = 1000 * time.time()
+    body_list = []
     with open('data/few_reviews.csv') as csvFile:
         # DictReader -> convert lines of CSV to OrderedDict
         for row in csv.DictReader(csvFile):
@@ -78,15 +84,14 @@ def main(event):
             body = {}
             for k, v in row.items():
                 body[k] = int(v) if k == 'reviewType' else v
+            body_list.append(body)
     execute_time += 1000 * time.time() - execute_start_time
 
     serialize_start_time = 1000 * time.time()
     if op == "FT":
-        serialize_data = json.dumps({"body": body})
-    elif op == "OW":
-        serialize_data = body
+        serialize_data = json.dumps({"body": body_list})
     else:
-        serialize_data = pickle.dumps(body)
+        serialize_data = pickle.dumps(body_list)
     print(len(serialize_data) / 1024)
     serialize_time += 1000 * time.time() - serialize_start_time
 
@@ -99,6 +104,8 @@ def main(event):
         redis_client.set("body", serialize_data)
     elif op == "CB":
         bucket.set("body", serialize_data)
+    elif op == "OW":
+        s3.put_object(Bucket=BUCKET, Key=File_KEY.format("body"), Body=serialize_data)
     else:
         response["body"] = serialize_data
     transport_time += 1000 * time.time() - transport_start_time
@@ -114,6 +121,6 @@ def main(event):
 
 if __name__ == "__main__":
     print(main({"op": "OW"}))
-    print(main({"op": "OFC"}))
-    print(main({"op": "FT"}))
-    print(main({"op": "CB"}))
+    # (main({"op": "OFC"}))
+    (main({"op": "FT"}))
+    (main({"op": "CB"}))

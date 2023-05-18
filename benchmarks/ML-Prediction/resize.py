@@ -66,14 +66,14 @@ def main(event):
         serialized_data = json.dumps({"resize_img_list": resize_img_list_})
     else:
         serialized_data = pickle.dumps(resize_img_list)
-    print(len(serialized_data) / 1024 / 1024)
+    print(len(serialized_data) / 1024)
     serialize_end_time = 1000 * time.time()
 
     init_start_time = 1000 * time.time()
     if op == "OFC":
         redis_client = redis.Redis(host='222.20.94.67', port=6379, db=0)
     elif op == "CB":
-        bucket = df.create_bucket("kingdo", 1024 * 1024 * 6)
+        bucket = df.create_bucket("kingdo", 1024 * 1024 * 4)
     elif op == "FT":
         pass
     else:
@@ -99,6 +99,7 @@ def main(event):
     transport_end_time = 1000 * time.time()
 
     response["endTime"] = 1000 * time.time()
+    response["Time-Breakdown-Resize"] = response["endTime"] - execute_start_time
     print(init_end_time - init_start_time)
     return timestamp(response, event,
                      execute_start_time, execute_end_time,
@@ -108,6 +109,9 @@ def main(event):
 
 
 if __name__ == '__main__':
-    # print(main({"op": "OFC"}))
-    # print(main({"op": "CB"}))
+    print(main({"op": "OFC"}))
+    print(main({"op": "CB"}))
     print(main({"op": "OW"}))
+    result = main({"op": "FT"})
+    result.pop("ml_predict")
+    print(result)

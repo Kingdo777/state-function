@@ -94,7 +94,7 @@ clean:
 	rm -rf .sequence_action_is_deployed .readcsv_action_is_deployed .publishsns_action_is_deployed .sentiment_action_is_deployed .WritetoDB_action_is_deployed __main__.py .action_is_newest
 	rm -rf sentiment_action.zip readcsv_action.zip $(ACTION_ZIP)
 	rm -rf .faastlane
-	rm -rf result-*
+	# rm -rf result-*
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete $(Faastlane_ACTION_NAME)
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete Sentiment-Analysis-Three-sequence
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete Sentiment-Analysis-Three-sentiment

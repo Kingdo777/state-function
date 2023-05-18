@@ -9,7 +9,7 @@ import redis
 import datafunction as df
 
 BUCKET = 'kingdo-serverless'
-IMG_KEY = 'faastlane/prediction-pipeline/img-resize/{}.npy'
+File_KEY = 'faastlane/healthycare/{}'
 
 AWS_ACCESS_KEY_ID = "AKIA2EGUEMCVKZGPBGIC"
 AWS_SECRET_KEY_ID = "w9zEt8hTXOkKKbOIc+gWC8FaXfYAkm23b8YhOQ/3"
@@ -71,7 +71,10 @@ def main(event):
     elif op == "FT":
         pass
     else:
-        pass
+        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_KEY_ID,
+                          region_name=S3_REGION_NAME,
+                          config=Config(proxies={'https': 'http://192.168.162.239:7890'}))
     init_time += 1000 * time.time() - init_start_time
 
     transport_start_time = 1000 * time.time()
@@ -84,7 +87,7 @@ def main(event):
     elif op == "FT":
         body = event["body"]
     else:
-        body = event["body"]
+        body = s3.get_object(Bucket=BUCKET, Key=File_KEY.format("body"))['Body'].read()
     transport_time += 1000 * time.time() - transport_start_time
 
     serialize_start_time = 1000 * time.time()
@@ -93,7 +96,8 @@ def main(event):
         message = body["message"]
         entity = body["entities"]["index0"]
     elif op == "OW":
-        message = body["message"]["index0"]
+        body = pickle.loads(body)
+        message = body["message"]
         entity = body["entities"]["index0"]
     else:
         entity = pickle.loads(entity)["index0"]
@@ -129,23 +133,26 @@ def main(event):
 if __name__ == "__main__":
     data = {'op': 'OW', 'body': {
         'message': 'Pt is 87 yo woman, highschool teacher with past medical history that includes   - status post cardiac catheterization in April 2019.She presents today with palpitations and chest pressure.HPI : Sleeping trouble on present dosage of Clonidine. Severe Rash  on face and leg, slightly itchy  Meds : Vyvanse 50 mgs po at breakfast daily,             Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs HEENT : Boggy inferior turbinates, No oropharyngeal lesion Lungs : clear Heart : Regular rhythm Skin :  Mild erythematous eruption to hairline Follow-up as scheduled',
-        'entities': [{'Id': 1, 'BeginOffset': 6, 'EndOffset': 8, 'Score': 0.9997377991676331, 'Text': '87',
-                      'Category': 'PROTECTED_HEALTH_INFORMATION', 'Type': 'AGE', 'Traits': []},
-                     {'Id': 2, 'BeginOffset': 19, 'EndOffset': 37, 'Score': 0.20220214128494263,
-                      'Text': 'highschool teacher', 'Category': 'PROTECTED_HEALTH_INFORMATION', 'Type': 'PROFESSION',
-                      'Traits': []},
-                     {'Id': 3, 'BeginOffset': 121, 'EndOffset': 131, 'Score': 0.9997790455818176, 'Text': 'April 2019',
-                      'Category': 'PROTECTED_HEALTH_INFORMATION', 'Type': 'DATE', 'Traits': []}]},
+        'entities': {
+            "index0": [{'Id': 1, 'BeginOffset': 6, 'EndOffset': 8, 'Score': 0.9997377991676331, 'Text': '87',
+                        'Category': 'PROTECTED_HEALTH_INFORMATION', 'Type': 'AGE', 'Traits': []},
+                       {'Id': 2, 'BeginOffset': 19, 'EndOffset': 37, 'Score': 0.20220214128494263,
+                        'Text': 'highschool teacher', 'Category': 'PROTECTED_HEALTH_INFORMATION', 'Type': 'PROFESSION',
+                        'Traits': []},
+                       {'Id': 3, 'BeginOffset': 121, 'EndOffset': 131, 'Score': 0.9997790455818176,
+                        'Text': 'April 2019',
+                        'Category': 'PROTECTED_HEALTH_INFORMATION', 'Type': 'DATE', 'Traits': []}]
+        }},
             'endTime': 1683948751044.022, 'requestTime': 0, 'executeTime': 1064.13818359375,
             'serializeTime': 0.005859375, 'initTime': 0.001220703125, 'interactionTime': 0.003662109375}
     print(main(data))
 
-    data = {'op': 'FT',
-            'body': '{"message": "Pt is 87 yo woman, highschool teacher with past medical history that includes   - status post cardiac catheterization in April 2019.She presents today with palpitations and chest pressure.HPI : Sleeping trouble on present dosage of Clonidine. Severe Rash  on face and leg, slightly itchy  Meds : Vyvanse 50 mgs po at breakfast daily,             Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs HEENT : Boggy inferior turbinates, No oropharyngeal lesion Lungs : clear Heart : Regular rhythm Skin :  Mild erythematous eruption to hairline Follow-up as scheduled", "entities": [{"Id": 1, "BeginOffset": 6, "EndOffset": 8, "Score": 0.9997377991676331, "Text": "87", "Category": "PROTECTED_HEALTH_INFORMATION", "Type": "AGE", "Traits": []}, {"Id": 2, "BeginOffset": 19, "EndOffset": 37, "Score": 0.20220214128494263, "Text": "highschool teacher", "Category": "PROTECTED_HEALTH_INFORMATION", "Type": "PROFESSION", "Traits": []}, {"Id": 3, "BeginOffset": 121, "EndOffset": 131, "Score": 0.9997790455818176, "Text": "April 2019", "Category": "PROTECTED_HEALTH_INFORMATION", "Type": "DATE", "Traits": []}]}'}
-    print(main(data))
-
-    data = {'op': 'OFC'}
-    print(main(data))
-
-    data = {'op': 'CB'}
-    print(main(data))
+    # data = {'op': 'FT',
+    #         'body': '{"message": "Pt is 87 yo woman, highschool teacher with past medical history that includes   - status post cardiac catheterization in April 2019.She presents today with palpitations and chest pressure.HPI : Sleeping trouble on present dosage of Clonidine. Severe Rash  on face and leg, slightly itchy  Meds : Vyvanse 50 mgs po at breakfast daily,             Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs HEENT : Boggy inferior turbinates, No oropharyngeal lesion Lungs : clear Heart : Regular rhythm Skin :  Mild erythematous eruption to hairline Follow-up as scheduled", "entities": [{"Id": 1, "BeginOffset": 6, "EndOffset": 8, "Score": 0.9997377991676331, "Text": "87", "Category": "PROTECTED_HEALTH_INFORMATION", "Type": "AGE", "Traits": []}, {"Id": 2, "BeginOffset": 19, "EndOffset": 37, "Score": 0.20220214128494263, "Text": "highschool teacher", "Category": "PROTECTED_HEALTH_INFORMATION", "Type": "PROFESSION", "Traits": []}, {"Id": 3, "BeginOffset": 121, "EndOffset": 131, "Score": 0.9997790455818176, "Text": "April 2019", "Category": "PROTECTED_HEALTH_INFORMATION", "Type": "DATE", "Traits": []}]}'}
+    # print(main(data))
+    #
+    # data = {'op': 'OFC'}
+    # print(main(data))
+    #
+    # data = {'op': 'CB'}
+    # print(main(data))

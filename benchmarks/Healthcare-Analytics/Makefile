@@ -87,7 +87,7 @@ action_invoke_Openwhisk: .sequence_action_is_deployed
 
 clean:
 	rm -rf .sequence_action_is_deployed .identifyphi_action_is_deployed .anonymize_action_is_deployed .analytics_action_is_deployed __main__.py .action_is_newest
-	rm -rf result-*
+	# rm -rf result-*
 	rm -rf analytics_action.zip Healthcare-Analytics.zip
 	rm -rf .faastlane
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete Healthcare-Analytics-Faastlane

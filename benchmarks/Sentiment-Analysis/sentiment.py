@@ -11,7 +11,7 @@ import redis
 import datafunction as df
 
 BUCKET = 'kingdo-serverless'
-IMG_KEY = 'faastlane/prediction-pipeline/img-resize/{}.npy'
+File_KEY = 'faastlane/sentiment/{}'
 
 AWS_ACCESS_KEY_ID = "AKIA2EGUEMCVKZGPBGIC"
 AWS_SECRET_KEY_ID = "w9zEt8hTXOkKKbOIc+gWC8FaXfYAkm23b8YhOQ/3"
@@ -36,6 +36,8 @@ def timestamp(response, event,
         response['requestTime'] = prior_request_time + start_time - event['endTime']
     else:
         response['requestTime'] = 0
+    print("requestTime:{}".format(response['requestTime']))
+
 
     prior_execute_time = event['executeTime'] if 'executeTime' in event else 0
     response['executeTime'] = prior_execute_time + execute_time
@@ -70,7 +72,10 @@ def main(event):
     elif op == "FT":
         pass
     else:
-        pass
+        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_KEY_ID,
+                          region_name=S3_REGION_NAME,
+                          config=Config(proxies={'https': 'http://192.168.162.239:7890'}))
     init_time += 1000 * time.time() - init_start_time
 
     transport_start_time = 1000 * time.time()
@@ -78,46 +83,48 @@ def main(event):
         body = redis_client.get("body")
     elif op == "CB":
         body = bucket.get_bytes("body")
+    elif op == "OW":
+        body = s3.get_object(Bucket=BUCKET, Key=File_KEY.format("body"))['Body'].read()
     else:
         body = event["body"]
     transport_time += 1000 * time.time() - transport_start_time
 
     serialize_start_time = 1000 * time.time()
     if op == "FT":
-        body = json.loads(body)["body"]
-    elif op == "OW":
-        pass
+        body_list = json.loads(body)["body"]
     else:
-        body = pickle.loads(body)
+        body_list = pickle.loads(body)
     serialize_time += 1000 * time.time() - serialize_start_time
 
     execute_start_time = 1000 * time.time()
     sid = SentimentIntensityAnalyzer()
-    feedback = body['feedback']
-    scores = sid.polarity_scores(feedback)
-    if scores['compound'] > 0:
-        sentiment = 1
-    elif scores['compound'] == 0:
-        sentiment = 0
-    else:
-        sentiment = -1
+    sentiments = []
+    for body in body_list:
+        feedback = body['feedback']
+        scores = sid.polarity_scores(feedback)
+        if scores['compound'] > 0:
+            sentiment = 1
+        elif scores['compound'] == 0:
+            sentiment = 0
+        else:
+            sentiment = -1
+        sentiments.append({'sentiment': sentiment,
+                           'reviewType': body['reviewType'] + 0,
+                           'reviewID': (body['reviewID'] + '0')[:-1],
+                           'customerID': (body['customerID'] + '0')[:-1],
+                           'productID': (body['productID'] + '0')[:-1],
+                           'feedback': (body['feedback'] + '0')[:-1]})
 
-    body_sentiment = {'sentiment': sentiment,
-                      'reviewType': body['reviewType'] + 0,
-                      'reviewID': (body['reviewID'] + '0')[:-1],
-                      'customerID': (body['customerID'] + '0')[:-1],
-                      'productID': (body['productID'] + '0')[:-1],
-                      'feedback': (body['feedback'] + '0')[:-1]}
     execute_time += 1000 * time.time() - execute_start_time
 
     serialize_start_time = 1000 * time.time()
     if op == "FT":
-        serialize_data = json.dumps({"body_sentiment": body_sentiment})
-    elif op == "OW":
-        serialize_data = body_sentiment
+        serialize_data = json.dumps({"body_sentiment": sentiments})
     else:
-        serialize_data = pickle.dumps(body_sentiment)
+        serialize_data = pickle.dumps(sentiments)
     serialize_time += 1000 * time.time() - serialize_start_time
+
+    print(len(serialize_data)/1024)
 
     response = {
         "op": event["op"]
@@ -128,6 +135,8 @@ def main(event):
         redis_client.set("body_sentiment", serialize_data)
     elif op == "CB":
         bucket.set("body_sentiment", serialize_data)
+    elif op == "OW":
+        s3.put_object(Bucket=BUCKET, Key=File_KEY.format("body_sentiment"), Body=serialize_data)
     else:
         response["body_sentiment"] = serialize_data
     transport_time += 1000 * time.time() - transport_start_time
@@ -142,24 +151,19 @@ def main(event):
 
 
 if __name__ == "__main__":
-    result = main({'op': 'OW', 'body': {'reviewType': 0, 'reviewID': '123', 'customerID': '456', 'productID': '789',
-                                        'feedback': 'Great product'}, 'endTime': 1683984881731.7017, 'requestTime': 0,
-                   'executeTime': 284.338134765625, 'serializeTime': 0.025390625, 'initTime': 0.00048828125,
-                   'interactionTime': 0.0009765625})
-    print(result)
-    result.pop('body_sentiment')
-    print(result)
+    print(main({'op': 'OW', 'endTime': 1684201569778.8013, 'requestTime': 0, 'executeTime': 310.790771484375,
+                'serializeTime': 67.68505859375, 'initTime': 184.194580078125, 'interactionTime': 2352.291259765625}))
 
-    print(main({'op': 'OFC', 'endTime': 1683983828400.8694, 'requestTime': 0, 'executeTime': 279.18212890625,
-                'serializeTime': 0.03369140625, 'initTime': 0.376953125, 'interactionTime': 3.33984375}))
-
-    result = main({'op': 'FT',
-                   'body': '{"body": {"reviewType": 0, "reviewID": "123", "customerID": "456", "productID": "789", "feedback": "Great product"}}',
-                   'endTime': 1683983828704.32, 'requestTime': 0, 'executeTime': 303.250732421875,
-                   'serializeTime': 0.070068359375, 'initTime': 0.0029296875, 'interactionTime': 0.0009765625})
-    print(result)
-    result.pop('body_sentiment')
-    print(result)
+    # print(main({'op': 'OFC', 'endTime': 1683983828400.8694, 'requestTime': 0, 'executeTime': 279.18212890625,
+    #             'serializeTime': 0.03369140625, 'initTime': 0.376953125, 'interactionTime': 3.33984375}))
+    #
+    # result = main({'op': 'FT',
+    #                'body': '{"body": {"reviewType": 0, "reviewID": "123", "customerID": "456", "productID": "789", "feedback": "Great product"}}',
+    #                'endTime': 1683983828704.32, 'requestTime': 0, 'executeTime': 303.250732421875,
+    #                'serializeTime': 0.070068359375, 'initTime': 0.0029296875, 'interactionTime': 0.0009765625})
+    # print(result)
+    # result.pop('body_sentiment')
+    # print(result)
 
     print(main({'op': 'CB', 'endTime': 1683983828985.679, 'requestTime': 0, 'executeTime': 280.014892578125,
                 'serializeTime': 0.042236328125, 'initTime': 1.24169921875, 'interactionTime': 0.0146484375}))

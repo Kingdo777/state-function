@@ -115,7 +115,7 @@ clean:
 	rm -rf .faastlane __main__.py
 	rm -rf .action_is_newest .action_is_deployed .action_is_deployed .lastpx_action_is_deployed .side_action_is_deployed .marketdata_action_is_deployed .trddate_action_is_deployed .volume_action_is_deployed .marginBalance_action_is_deployed
 	rm -rf FINRA.zip marketdata_action.zip lastpx_action.zip side_action.zip trddate_action.zip volume_action.zip marginBalance_action.zip
-	rm -rf result-*
+	# rm -rf result-*
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete FINRA-Three-flow
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete FINRA-Three-marketdata
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete FINRA-Three-trddate

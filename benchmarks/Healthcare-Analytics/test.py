@@ -65,7 +65,7 @@ def main(op):
     # 重复执行命令
     for i in range(RUNS):
         print(f"Run {i + 1}/{RUNS}...")
-        for i in range(3):
+        for j in range(3):
             try:
                 output = run_command(cmd)
                 execute_time, init_time, interaction_time, request_time, serialize_time = extract_times(output)
@@ -76,7 +76,7 @@ def main(op):
                 serialize_times.append(serialize_time)
                 break
             except Exception:
-                print(f"Run {i + 1}/{RUNS} failed, retrying {i + 1}/{3}")
+                print(f"Run {i + 1}/{RUNS} failed, retrying {j + 1}/{3}")
                 continue
 
         time.sleep(1)
@@ -90,12 +90,12 @@ def main(op):
 
     # 输出结果
     print("\nResults:")
-    print(f"\t\t\t median\t 99ile\t min\t")
-    print(f"Interaction: {interaction_median:.1f}\t {interaction_percentile_99:.1f}\t {interaction_min_time:.1f}\t")
-    print(f"Execute:\t {execute_median:.1f}\t {execute_percentile_99:.1f}\t {execute_min_time:.1f}\t")
+    print(f"\t median\t 99ile\t min\t")
+    print(f"Interaction\t {interaction_median:.1f}\t {interaction_percentile_99:.1f}\t {interaction_min_time:.1f}\t")
+    print(f"Execute\t {execute_median:.1f}\t {execute_percentile_99:.1f}\t {execute_min_time:.1f}\t")
     print(f"Serialize:\t {serialize_median:.1f}\t {serialize_percentile_99:.1f}\t {serialize_min_time:.1f}\t")
-    print(f"Init:\t\t {init_median:.1f}\t {init_percentile_99:.1f}\t {init_min_time:.1f}\t")
-    print(f"Request:\t {request_median:.1f}\t {request_percentile_99:.1f}\t {request_min_time:.1f}\t\n")
+    print(f"Init\t {init_median:.1f}\t {init_percentile_99:.1f}\t {init_min_time:.1f}\t")
+    print(f"Request\t {request_median:.1f}\t {request_percentile_99:.1f}\t {request_min_time:.1f}\t\n")
 
     # 将结果写入文件
     with open("result-{}.txt".format(op), "w") as f:
@@ -105,24 +105,32 @@ def main(op):
         f.write(f"Cold start init time: {cold_start_init_time} ms\n")
         f.write(f"Cold start request time: {cold_start_request_time} ms\n")
         f.write("\n\n")
-        f.write(f"\t\t\t median\t 99ile\t min\t\n")
+        f.write(f"\t median\t 99ile\t min\t\n")
         f.write(
-            f"Interaction: {interaction_median:.1f}\t {interaction_percentile_99:.1f}\t {interaction_min_time:.1f}\t\n")
+            f"Interaction:\t {interaction_median:.1f}\t {interaction_percentile_99:.1f}\t {interaction_min_time:.1f}\t\n")
         f.write(f"Execute:\t {execute_median:.1f}\t {execute_percentile_99:.1f}\t {execute_min_time:.1f}\t\n")
         f.write(f"Serialize:\t {serialize_median:.1f}\t {serialize_percentile_99:.1f}\t {serialize_min_time:.1f}\t\n")
-        f.write(f"Init:\t\t {init_median:.1f}\t {init_percentile_99:.1f}\t {init_min_time:.1f}\t\n")
+        f.write(f"Init:\t {init_median:.1f}\t {init_percentile_99:.1f}\t {init_min_time:.1f}\t\n")
         f.write(f"Request:\t {request_median:.1f}\t {request_percentile_99:.1f}\t {request_min_time:.1f}\t\n")
 
 
 if __name__ == "__main__":
-    run_command("make clean")
+    print("################Openwhisk#######################")
+    # run_command("make -i clean")
+    # time.sleep(30)
     main("Openwhisk")
-    print("############################################")
-    run_command("make clean")
+
+    print("################### OFC ######################")
+    # run_command("make -i clean")
+    # time.sleep(30)
     main("OFC")
-    print("############################################")
-    run_command("make clean")
+
+    print("##################Faastorage#####################")
+    # run_command("make -i clean")
+    # time.sleep(30)
     main("Faastorage")
-    print("############################################")
-    run_command("make clean")
+
+    print("##################Faastlane#####################")
+    # run_command("make -i clean")
+    # time.sleep(30)
     main("Faastlane")

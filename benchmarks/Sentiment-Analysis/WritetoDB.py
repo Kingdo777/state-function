@@ -11,7 +11,7 @@ import redis
 import datafunction as df
 
 BUCKET = 'kingdo-serverless'
-IMG_KEY = 'faastlane/prediction-pipeline/img-resize/{}.npy'
+File_KEY = 'faastlane/sentiment/{}'
 
 AWS_ACCESS_KEY_ID = "AKIA2EGUEMCVKZGPBGIC"
 AWS_SECRET_KEY_ID = "w9zEt8hTXOkKKbOIc+gWC8FaXfYAkm23b8YhOQ/3"
@@ -36,6 +36,7 @@ def timestamp(response, event,
         response['requestTime'] = prior_request_time + start_time - event['endTime']
     else:
         response['requestTime'] = 0
+    print("requestTime:{}".format(response['requestTime']))
 
     prior_execute_time = event['executeTime'] if 'executeTime' in event else 0
     response['executeTime'] = prior_execute_time + execute_time
@@ -70,7 +71,10 @@ def main(event):
     elif op == "FT":
         pass
     else:
-        pass
+        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_KEY_ID,
+                          region_name=S3_REGION_NAME,
+                          config=Config(proxies={'https': 'http://192.168.162.239:7890'}))
     init_time += 1000 * time.time() - init_start_time
 
     transport_start_time = 1000 * time.time()
@@ -78,44 +82,42 @@ def main(event):
         body_sentiment = redis_client.get("body_sentiment")
     elif op == "CB":
         body_sentiment = bucket.get_bytes("body_sentiment")
+    elif op == "OW":
+        body_sentiment = s3.get_object(Bucket=BUCKET, Key=File_KEY.format("body_sentiment"))['Body'].read()
     else:
         body_sentiment = event["body_sentiment"]
     transport_time += 1000 * time.time() - transport_start_time
 
     serialize_start_time = 1000 * time.time()
     if op == "FT":
-        body_sentiment = json.loads(body_sentiment)["body_sentiment"]
-    elif op == "OW":
-        pass
+        body_sentiments = json.loads(body_sentiment)["body_sentiment"]
     else:
-        body_sentiment = pickle.loads(body_sentiment)
+        body_sentiments = pickle.loads(body_sentiment)
     serialize_time += 1000 * time.time() - serialize_start_time
 
     execute_start_time = 1000 * time.time()
     dynamodb = boto3.client('dynamodb', aws_access_key_id="AKIAQ4WHHPCKGVH4HO6S",
                             aws_secret_access_key="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",
                             region_name="us-east-1")
-    # select correct table based on input data
-    if body_sentiment['reviewType'] == 0:
-        tableName = 'faastlane-products-table'
-    elif body_sentiment['reviewType'] == 1:
-        tableName = 'faastlane-services-table'
-    else:
-        raise Exception("Input review is neither Product nor Service")
+    for body_sentiment in body_sentiments:
+        # select correct table based on input data
+        if body_sentiment['reviewType'] == 0:
+            tableName = 'faastlane-products-table'
+        elif body_sentiment['reviewType'] == 1:
+            tableName = 'faastlane-services-table'
+        else:
+            raise Exception("Input review is neither Product nor Service")
     execute_time += 1000 * time.time() - execute_start_time
 
     response = {
         "op": event["op"],
-        "endTime": 1000 * time.time(),
     }
 
     transport_start_time = 1000 * time.time()
-    if op == "OFC" or op == "CB":
-        pass
-    else:
+    if op == "FT":
         response["body_sentiment"] = event["body_sentiment"]
     transport_time += 1000 * time.time() - transport_start_time
-
+    response["endTime"] = 1000 * time.time()
     return timestamp(response, event,
                      start_time,
                      execute_time,
@@ -126,20 +128,18 @@ def main(event):
 
 if __name__ == "__main__":
     print(main(
-        {'op': 'OW',
-         'body_sentiment': {'sentiment': 1, 'reviewType': 0, 'reviewID': '123', 'customerID': '456', 'productID': '789',
-                            'feedback': 'Great product'}, 'endTime': 1683986211571.14,
-         'requestTime': 1329818.8503417969, 'executeTime': 304.913330078125, 'serializeTime': 0.027099609375,
-         'initTime': 0.001708984375, 'interactionTime': 0.0029296875}))
-    print(main(
-        {'op': 'OFC', 'endTime': 1683985303160.1968, 'requestTime': 1474736.4560546875, 'executeTime': 298.7470703125,
-         'serializeTime': 0.072509765625, 'initTime': 0.734619140625, 'interactionTime': 6.23876953125}))
-    print(main(
-        {'op': 'FT',
-         'body_sentiment': '{"body_sentiment": {"sentiment": 1, "reviewType": 0, "reviewID": "123", "customerID": "456", "productID": "789", "feedback": "Great product"}}',
-         'endTime': 1683986211604.395, 'requestTime': 2382886.0346679688, 'executeTime': 317.211669921875,
-         'serializeTime': 0.140869140625, 'initTime': 0.004150390625, 'interactionTime': 0.0029296875}))
-    print(main(
-        {'op': 'CB', 'endTime': 1683985303190.9434, 'requestTime': 1474189.6872558594, 'executeTime': 294.21533203125,
-         'serializeTime': 0.072021484375, 'initTime': 2.5537109375, 'interactionTime': 0.03955078125}
+        {'op': 'OW', 'endTime': 1684201660674.0999, 'requestTime': 82682.80444335938, 'executeTime': 3380.864013671875,
+         'serializeTime': 195.634521484375, 'initTime': 341.956787109375, 'interactionTime': 7208.978271484375}
     ))
+    # print(main(
+    #     {'op': 'OFC', 'endTime': 1683985303160.1968, 'requestTime': 1474736.4560546875, 'executeTime': 298.7470703125,
+    #      'serializeTime': 0.072509765625, 'initTime': 0.734619140625, 'interactionTime': 6.23876953125}))
+    # print(main(
+    #     {'op': 'FT',
+    #      'body_sentiment': '{"body_sentiment": {"sentiment": 1, "reviewType": 0, "reviewID": "123", "customerID": "456", "productID": "789", "feedback": "Great product"}}',
+    #      'endTime': 1683986211604.395, 'requestTime': 2382886.0346679688, 'executeTime': 317.211669921875,
+    #      'serializeTime': 0.140869140625, 'initTime': 0.004150390625, 'interactionTime': 0.0029296875}))
+    # print(main(
+    #     {'op': 'CB', 'endTime': 1683985303190.9434, 'requestTime': 1474189.6872558594, 'executeTime': 294.21533203125,
+    #      'serializeTime': 0.072021484375, 'initTime': 2.5537109375, 'interactionTime': 0.03955078125}
+    # ))

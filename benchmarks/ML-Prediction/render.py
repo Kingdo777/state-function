@@ -89,9 +89,13 @@ def main(event):
     execute_end_time = 1000 * time.time()
 
     response = {
-        "body": text
+        "body": text,
+        "Time-Breakdown": {
+            "Resize": event["Time-Breakdown-Resize"],
+            "Predict": event["Time-Breakdown-Predict"],
+            "Render": execute_end_time - start_time
+        }
     }
-
     return timestamp(response, event, start_time,
                      execute_start_time, execute_end_time,
                      serialize_start_time, serialize_end_time,

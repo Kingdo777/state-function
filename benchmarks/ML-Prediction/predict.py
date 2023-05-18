@@ -119,7 +119,8 @@ def main(event):
     transport_time += 1000 * time.time() - transport_start_time
 
     response["endTime"] = 1000 * time.time()
-    print(init_time)
+    response["Time-Breakdown-Predict"] = response["endTime"] - start_time
+    response["Time-Breakdown-Resize"] = event["Time-Breakdown-Resize"]
     return timestamp(response, event,
                      start_time,
                      execute_time,
