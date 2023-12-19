@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(DataFunction)
+project(StateFunction)
 
 # 给编译输出的结果, 添加颜色高亮效果 (https://zhuanlan.zhihu.com/p/368359203)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 20)
 option(ENABLE_TRACE "Statistics execution time" ON)
 
 # 设置自定义的include目录
-set(DataFunction_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
+set(StateFunction_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 
 # 设置bin，lib的输出目录
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out/lib)
@@ -36,7 +36,7 @@ endif ()
 function(df_lib_share lib_name)
     # 获取源文件
     file(GLOB SOURCES_FILE */*.cpp *.cpp *.cc *.c)
-    file(GLOB HEADERS_FILE ${DataFunction_INCLUDE_DIR}/df/${lib_name}/*.h)
+    file(GLOB HEADERS_FILE ${StateFunction_INCLUDE_DIR}/df/${lib_name}/*.h)
     # 生成库文件, 注意, 如果自定义各个lib之间存在引用关系, 需要手动添加
     add_library(${lib_name} SHARED ${SOURCES_FILE} ${HEADERS_FILE})
     # 在这里如果不用PUBLIC, 那么使用这些库的可执行程序, 将无法引用第三方库的头文件. 因为我们自己的库的头文件中会引用这些头文件,
@@ -52,7 +52,7 @@ endfunction()
 function(df_lib_static lib_name)
     # 获取源文件
     file(GLOB SOURCES_FILE */*.cpp *.cpp *.cc *.c)
-    file(GLOB HEADERS_FILE ${DataFunction_INCLUDE_DIR}/df/${lib_name}/*.h)
+    file(GLOB HEADERS_FILE ${StateFunction_INCLUDE_DIR}/df/${lib_name}/*.h)
     # 生成库文件, 注意, 如果自定义各个lib之间存在引用关系, 需要手动添加
     add_library(${lib_name} STATIC ${SOURCES_FILE} ${HEADERS_FILE})
     # 在这里如果不用PUBLIC, 那么使用这些库的可执行程序, 将无法引用第三方库的头文件. 因为我们自己的库的头文件中会引用这些头文件,
@@ -66,9 +66,8 @@ function(df_lib_static lib_name)
 endfunction()
 
 add_subdirectory(src/common)
-add_subdirectory(src/DataFunction)
-add_subdirectory(src/DataFunctionManager)
-add_subdirectory(src/DataFunctionSidecar)
+add_subdirectory(src/state-function-action)
+add_subdirectory(src/state-function-library)
 
 add_subdirectory(test)
 

@@ -2,8 +2,8 @@
 // Created by kingdo on 2022/3/16.
 //
 
-#ifndef DataFunction_DL_H
-#define DataFunction_DL_H
+#ifndef StateFunction_DL_H
+#define StateFunction_DL_H
 
 #include <cerrno>
 #include <cstdlib>
@@ -47,4 +47,4 @@ namespace df::utils
 
 }
 
-#endif //DataFunction_DL_H
+#endif //StateFunction_DL_H

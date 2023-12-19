@@ -2,8 +2,8 @@
 // Created by kingdo on 23-3-23.
 //
 
-#ifndef DATAFUNCTION_NETWORK_H
-#define DATAFUNCTION_NETWORK_H
+#ifndef STATEFUNCTION_NETWORK_H
+#define STATEFUNCTION_NETWORK_H
 
 #include <curl/curl.h>
 #include <df/utils/log.h>
@@ -15,4 +15,4 @@ namespace df::utils {
     std::string POST(const std::string &url, const std::string& body, int timeout);;
 }
 
-#endif //DATAFUNCTION_NETWORK_H
+#endif //STATEFUNCTION_NETWORK_H

@@ -1,7 +1,7 @@
 import base64
 import json
 import os
-import datafunction as df
+import statefunction as df
 import pickle
 import time
 import numpy as np
@@ -169,7 +169,7 @@ if __name__ == '__main__':
     # print("json dumps&&loads use time {}ms".format(endTime - startTime))
     # assert img_npy_1.all() == img_npy.all()
 
-    # Data-Function
+    # State-Function
     # img_npy_pickle = pickle.dumps(img_npy)
     # bucket = df.create_bucket("kingdo", (int(len(img_npy_pickle) / 1024 / 1024) + 1) * 1024 * 1024)
     # startTime = 1000 * time.time()

@@ -2,8 +2,8 @@
 // Created by 14408 on 2022/2/18.
 //
 
-#ifndef DataFunction_CONFIG_H
-#define DataFunction_CONFIG_H
+#ifndef StateFunction_CONFIG_H
+#define StateFunction_CONFIG_H
 
 #include <chrono>
 #include <string>
@@ -46,4 +46,4 @@ namespace df::utils {
     };
 }
 
-#endif // DataFunction_CONFIG_H
+#endif // StateFunction_CONFIG_H

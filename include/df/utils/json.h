@@ -2,8 +2,8 @@
 // Created by kingdo on 2022/2/26.
 //
 
-#ifndef DataFunction_JSON_H
-#define DataFunction_JSON_H
+#ifndef StateFunction_JSON_H
+#define StateFunction_JSON_H
 
 #include <map>
 #include <rapidjson/document.h>
@@ -27,4 +27,4 @@ namespace df::utils {
     };
 }
 
-#endif // DataFunction_JSON_H
+#endif // StateFunction_JSON_H

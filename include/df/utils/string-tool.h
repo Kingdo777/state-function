@@ -2,8 +2,8 @@
 // Created by kingdo on 2022/3/10.
 //
 
-#ifndef DataFunction_STRING_TOOL_H
-#define DataFunction_STRING_TOOL_H
+#ifndef StateFunction_STRING_TOOL_H
+#define StateFunction_STRING_TOOL_H
 
 #include <algorithm>
 #include <memory>
@@ -26,4 +26,4 @@ namespace df::utils
     bool stringIsInt(const std::string& input);
 }
 
-#endif //DataFunction_STRING_TOOL_H
+#endif //StateFunction_STRING_TOOL_H

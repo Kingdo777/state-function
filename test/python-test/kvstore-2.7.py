@@ -1,7 +1,7 @@
 import base64
 import json
 import os
-import datafunction as df
+import statefunction as df
 import pickle
 import time
 import numpy as np
@@ -61,7 +61,7 @@ def read_write_test():
 if __name__ == '__main__':
     # read_write_test()
 
-    image = Image.open("/home/kingdo/CLionProjects/DataFunction/benchmarks/ML-Prediction/Faastlane/data/image.jpg")
+    image = Image.open("/home/kingdo/CLionProjects/StateFunction/benchmarks/ML-Prediction/Faastlane/data/image.jpg")
     image_resize = image.resize((224, 224))
     img_npy = np.asarray(image_resize).astype(float) / 128 - 1
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
     assert img_npy_1.all() == img_npy.all()
 
-    # Data-Function
+    # State-Function
     img_npy_pickle = pickle.dumps(img_npy)
 
     startTime = 1000 * time.time()

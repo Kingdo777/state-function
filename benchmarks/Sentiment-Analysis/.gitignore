@@ -1,7 +1,0 @@
-*_action_is_deployed
-*.zip
-.faastlane
-.idea
-.action_is_newest
-__main__.py
-result-*

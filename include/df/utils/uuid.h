@@ -2,8 +2,8 @@
 // Created by kingdo on 2022/3/4.
 //
 
-#ifndef DataFunction_UUID_H
-#define DataFunction_UUID_H
+#ifndef StateFunction_UUID_H
+#define StateFunction_UUID_H
 
 #include <atomic>
 #include <cstdint>
@@ -18,4 +18,4 @@ namespace df::utils
     //    void uuid_reset();
 }
 
-#endif // DataFunction_UUID_H
+#endif // StateFunction_UUID_H

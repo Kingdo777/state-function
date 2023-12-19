@@ -2,8 +2,8 @@
 // Created by kingdo on 2022/3/6.
 //
 
-#ifndef DataFunction_SIGNAL_TOOL_H
-#define DataFunction_SIGNAL_TOOL_H
+#ifndef StateFunction_SIGNAL_TOOL_H
+#define StateFunction_SIGNAL_TOOL_H
 
 #include <csignal>
 #include <sys/wait.h>
@@ -29,4 +29,4 @@
         SPDLOG_INFO("Sigwait return value: {}", signal); \
     }
 
-#endif //DataFunction_SIGNAL_TOOL_H
+#endif //StateFunction_SIGNAL_TOOL_H

@@ -113,7 +113,7 @@ target_link_libraries(common_dependencies INTERFACE
         )
 #--------------------------------------------------------------------
 
-target_include_directories(common_dependencies INTERFACE ${DataFunction_INCLUDE_DIR})
+target_include_directories(common_dependencies INTERFACE ${StateFunction_INCLUDE_DIR})
 
 # 起一个别名, 因为当前CMAKE不支持直接生成df::格式的lib
 add_library(df::common_dependencies ALIAS common_dependencies)

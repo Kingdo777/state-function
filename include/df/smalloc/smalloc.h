@@ -2,8 +2,8 @@
 // Created by kingdo on 23-3-13.
 //
 
-#ifndef DATAFUNCTION_SMALLOC_H
-#define DATAFUNCTION_SMALLOC_H
+#ifndef STATEFUNCTION_SMALLOC_H
+#define STATEFUNCTION_SMALLOC_H
 
 #include <df/utils/macro.h>
 #include <df/utils/locks.h>
@@ -70,4 +70,4 @@ namespace df {
 }
 
 
-#endif //DATAFUNCTION_SMALLOC_H
+#endif //STATEFUNCTION_SMALLOC_H

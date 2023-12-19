@@ -2,8 +2,8 @@
 // Created by kingdo on 2022/2/25.
 //
 
-#ifndef DataFunction_TIMING_H
-#define DataFunction_TIMING_H
+#ifndef StateFunction_TIMING_H
+#define StateFunction_TIMING_H
 
 #include <chrono>
 #include <string>
@@ -49,4 +49,4 @@ namespace df::utils
     };
 }
 
-#endif // DataFunction_TIMING_H
+#endif // StateFunction_TIMING_H

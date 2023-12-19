@@ -2,8 +2,8 @@
 // Created by 14408 on 2022/2/18.
 //
 
-#ifndef DataFunction_LOG_H
-#define DataFunction_LOG_H
+#ifndef StateFunction_LOG_H
+#define StateFunction_LOG_H
 
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
@@ -31,4 +31,4 @@ namespace df::utils
     void printAllENV();
 }
 
-#endif // DataFunction_LOG_H
+#endif // StateFunction_LOG_H

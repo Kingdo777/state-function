@@ -6,12 +6,12 @@
 
 #define PAGE_SIZE 4096
 
-#ifndef DataFunction_FILE_CREAT_MODE
-#define DataFunction_FILE_CREAT_MODE 0664
+#ifndef StateFunction_FILE_CREAT_MODE
+#define StateFunction_FILE_CREAT_MODE 0664
 #endif
 
-#ifndef DataFunction_DIR_CREAT_MODE
-#define DataFunction_DIR_CREAT_MODE 0775
+#ifndef StateFunction_DIR_CREAT_MODE
+#define StateFunction_DIR_CREAT_MODE 0775
 #endif
 
 

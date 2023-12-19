@@ -2,8 +2,8 @@
 // Created by kingdo on 2022/2/26.
 //
 
-#ifndef DataFunction_OS_H
-#define DataFunction_OS_H
+#ifndef StateFunction_OS_H
+#define StateFunction_OS_H
 
 #include <df/utils/errors.h>
 #include <df/utils/macro.h>
@@ -71,4 +71,4 @@ namespace df::utils {
     }
 
 }
-#endif // DataFunction_OS_H
+#endif // StateFunction_OS_H

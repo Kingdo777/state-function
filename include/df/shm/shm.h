@@ -2,8 +2,8 @@
 // Created by kingdo on 23-3-14.
 //
 
-#ifndef DATAFUNCTION_SHM_H
-#define DATAFUNCTION_SHM_H
+#ifndef STATEFUNCTION_SHM_H
+#define STATEFUNCTION_SHM_H
 
 #include <df/utils/macro.h>
 #include <cstdio>
@@ -62,4 +62,4 @@ namespace df {
 }
 
 
-#endif //DATAFUNCTION_SHM_H
+#endif //STATEFUNCTION_SHM_H
