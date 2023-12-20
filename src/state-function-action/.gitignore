@@ -2,5 +2,6 @@ venv/
 virtualenv/
 *.zip
 .action_is_newest
+.shm_is_create
 __main__.py
 .virtualenv_is_update
