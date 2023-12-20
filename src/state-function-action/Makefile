@@ -12,25 +12,25 @@ ACTION_NAME = StateFunction
 
 BUILD_MODE ?= PURE_PYTHON_FILE
 ifeq ("$(BUILD_MODE)","PURE_PYTHON_FILE")
-	ACTION_CODE = action/__main__.py
+	ACTION_CODE = __main__.py
 else
 	ACTION_CODE = StateFunction-Virtualenv.zip
 endif
 
-.virtualenv_is_update: IPC-py-extend/ipc.cpp IPC-py-extend/ShareMemory.h IPC-py-extend/setup.py
-	cd IPC-py-extend && python3.10 setup.py build
+.virtualenv_is_update: ipc-py-extend/ipc.cpp ipc-py-extend/ShareMemory.h ipc-py-extend/setup.py
+	cd ipc-py-extend && python3.10 setup.py build
 	docker run --rm -v ".:/StateFunction" --entrypoint bash $(DOCKER_IMAGE):$(DOCKER_IMAGE_TAG) \
   -c "virtualenv -p 3.10 /StateFunction/virtualenv && \
   . /StateFunction/virtualenv/bin/activate  && \
-  pip3 install /StateFunction/IPC-py-extend && \
+  pip3 install /StateFunction/ipc-py-extend && \
   deactivate"
 	touch .virtualenv_is_update
 
 .PHONY: create-virtualenv
 create-virtualenv: .virtualenv_is_update
 
-StateFunction-Virtualenv.zip: action/__main__.py .virtualenv_is_update
-	cp action/__main__.py __main__.py
+StateFunction-Virtualenv.zip: __main__.py .virtualenv_is_update
+	cp __main__.py __main__.py
 	zip -r StateFunction-Virtualenv virtualenv __main__.py
 	rm __main__.py
 
@@ -77,5 +77,5 @@ clear:
 	sudo rm -rf virtualenv
 	rm -rf StateFunction-Virtualenv.zip .action_is_newest .virtualenv_is_update .shm_is_create
 	rm -rf __main__.py
-	rm -rf IPC-py-extend/build IPC-py-extend/ipc.egg-info
+	rm -rf ipc-py-extend/build ipc-py-extend/ipc.egg-info
 	WSK_CONFIG_FILE=$(WSK_CONFIG_FILE) $(WSK_CLI) -i action delete $(ACTION_NAME)
