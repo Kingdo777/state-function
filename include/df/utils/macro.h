@@ -22,7 +22,7 @@
         if (check)                         \
             break;                         \
         DF_CHECK(check, msg);              \
-        exit(0);                           \
+        throw std::runtime_error(msg);                           \
     } while (false)
 
 #define DF_CHECK(condition, msg) \

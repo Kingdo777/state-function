@@ -32,10 +32,8 @@ namespace df {
         [[nodiscard]] void *getAddress() const;
 
         void destroy() const {
-            if (shmctl(id, IPC_RMID, nullptr) == -1) {
-                perror("shmctl failed:");
-                DF_CHECK_WITH_EXIT(false, "Delete SHM Stat Wrong");
-            }
+            DF_CHECK_WITH_EXIT(shmctl(id, IPC_RMID, nullptr) != -1,
+                               fmt::format("Delete SHM Stat Wrong: {}", strerror(errno)));
         }
 
         ~SHM();

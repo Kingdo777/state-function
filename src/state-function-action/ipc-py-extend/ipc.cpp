@@ -39,8 +39,12 @@ ipc_create_shm(PyObject *self, PyObject *args) {
 
     shm->key = Key;
     shm->size = shm_size;
-    shm->ShareMemory = std::make_shared<df::SHM>(Key, shm_size);
-
+    try {
+        shm->ShareMemory = std::make_shared<df::SHM>(Key, shm_size);
+    } catch (std::exception &e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
     return (PyObject *) shm;
 }
 
@@ -55,10 +59,14 @@ ipc_get_shm(PyObject *self, PyObject *args) {
     auto type = &ShareMemory_Type;
     auto shm = (ShareMemory *) (type->tp_alloc(type, 0));
 
-
-    shm->ShareMemory = std::make_shared<df::SHM>(Key);
-    shm->key = Key;
-    shm->size = shm->ShareMemory->getSHMSize();
+    try {
+        shm->ShareMemory = std::make_shared<df::SHM>(Key);
+        shm->key = Key;
+        shm->size = shm->ShareMemory->getSHMSize();
+    } catch (std::exception &e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 
     return (PyObject *) shm;
 }

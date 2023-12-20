@@ -27,7 +27,13 @@ def main(event):
             }
         key = int(event["key"])
         size = int(event["size"])
-        shm = ipc.create_shm(key, size)
+        try:
+            shm = ipc.create_shm(key, size)
+        except Exception as e:
+            return {
+                "statusCode": "400",
+                "body": "create shm failed: {}".format(e)
+            }
         return {
             "statusCode": "200",
             "body": "OK",
@@ -41,8 +47,14 @@ def main(event):
                 "body": "destroy must specify key"
             }
         key = event["key"]
-        shm = ipc.get_shm(key)
-        shm.destroy()
+        try:
+            shm = ipc.get_shm(key)
+            shm.destroy()
+        except Exception as e:
+            return {
+                "statusCode": "400",
+                "body": "destroy shm failed: {}".format(e)
+            }
         return {
             "statusCode": "200",
             "body": "OK",

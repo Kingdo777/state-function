@@ -45,9 +45,15 @@ statefunction_create_bucket(PyObject *self, PyObject *args) {
     auto type = &Bucket_Type;
     auto bucket = (Bucket *) (type->tp_alloc(type, 0));
 
-    bucket->name = bucket_name;
-    bucket->size = bucket_size;
-    bucket->bucket = std::make_shared<df::dataStruct::KV_Store::StateFunctionKVStoreBucket>(bucket_name, bucket_size);
+    try {
+        bucket->name = bucket_name;
+        bucket->size = bucket_size;
+        bucket->bucket = std::make_shared<df::dataStruct::KV_Store::StateFunctionKVStoreBucket>(bucket_name,
+                                                                                                bucket_size);
+    } catch (std::exception &e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 
     // 这里不需要增加引用计数，是因为tp_alloc中已经增加了，
     // 如果不是将其作为返回值，其实是应该减1，作为返回值又要加1，正好抵消
@@ -75,9 +81,14 @@ statefunction_get_bucket(PyObject *self, PyObject *args) {
     auto type = &Bucket_Type;
     auto bucket = (Bucket *) (type->tp_alloc(type, 0));
 
-    bucket->name = bucket_name;
-    bucket->bucket = std::make_shared<df::dataStruct::KV_Store::StateFunctionKVStoreBucket>(bucket_name);
-    bucket->size = bucket->bucket->getBucketSize();
+    try {
+        bucket->name = bucket_name;
+        bucket->bucket = std::make_shared<df::dataStruct::KV_Store::StateFunctionKVStoreBucket>(bucket_name);
+        bucket->size = bucket->bucket->getBucketSize();
+    } catch (std::exception &e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 
 //    Py_INCREF(bucket);
 
