@@ -48,8 +48,6 @@ namespace df::dataStruct::KV_Store {
             DF_CHECK_WITH_EXIT(json["message"].IsObject(), "POST to getSHM, the result message is not a Object");
 
             auto SHM_KEY = key_t(strtol(json["message"]["key"].GetString(), nullptr, 10));
-            shm = SHM::getSHM(SHM_KEY);
-
             /// get shm bey the Key received form DFContainer-Manager
             shm = SHM::getSHM(SHM_KEY);
             bucket_size = shm->getSHMSize();
