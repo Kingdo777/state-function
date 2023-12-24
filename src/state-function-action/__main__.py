@@ -37,6 +37,7 @@ def main(event):
         return {
             "statusCode": "200",
             "body": "OK",
+            "key": key,
             "create_shm_use:": "{:.2f}ms".format(time.time() * 1000 - start)
         }
 

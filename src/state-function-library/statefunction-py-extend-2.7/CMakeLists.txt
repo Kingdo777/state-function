@@ -1,7 +1,7 @@
 pkg_check_modules(python-2.7 REQUIRED python-2.7)
 
 df_lib_share(python-extend-statefunction-2.7)
-target_link_libraries(python-extend-statefunction-2.7 PRIVATE df::utils df::shm df::smalloc python2.7)
+target_link_libraries(python-extend-statefunction-2.7 PRIVATE df::utils df::shm df::msg df::smalloc python2.7)
 
 target_include_directories(python-extend-statefunction-2.7 PRIVATE ${StateFunctionSidecar_INCLUDE_DIR} ${python-2.7_INCLUDE_DIRS})
 

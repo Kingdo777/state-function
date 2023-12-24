@@ -8,7 +8,7 @@
 using namespace df::dataStruct::KV_Store;
 
 void write() {
-    auto bucket = StateFunctionKVStoreBucket::CreateBucket("kingdo", 40960);
+    auto bucket = StateFunctionKVStoreBucket::CreateBucket("kingdo", 40960, true, 0x00022222);
     bucket->set("apple", "12");
     bucket->set("banana", "13");
     bucket->set("mum", "kiss");
@@ -21,7 +21,7 @@ void write() {
 }
 
 void read(bool destroy = false) {
-    auto bucket = StateFunctionKVStoreBucket::getBucket("kingdo");
+    auto bucket = StateFunctionKVStoreBucket::GetBucket("kingdo");
     SPDLOG_INFO(bucket->get("apple"));
     SPDLOG_INFO(bucket->get("banana"));
     SPDLOG_INFO(bucket->get("mum"));
@@ -50,7 +50,7 @@ int create_test() {
         int size = i * 4096;
         std::string size_s = fmt::format("{}KB", size / 1024);
         start = std::chrono::high_resolution_clock::now();
-        auto bucket = StateFunctionKVStoreBucket::CreateBucket("kingdo", size);
+        auto bucket = StateFunctionKVStoreBucket::CreateBucket("kingdo", size, true, 10);
         end = std::chrono::high_resolution_clock::now();
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         SPDLOG_INFO("Create {} use : {}ms", size_s, duration.count());

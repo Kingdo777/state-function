@@ -1,7 +1,7 @@
 pkg_check_modules(python-3.10 REQUIRED python-3.10)
 
 df_lib_share(python-extend-ipc)
-target_link_libraries(python-extend-ipc PRIVATE df::utils df::shm python3.10)
+target_link_libraries(python-extend-ipc PRIVATE df::utils df::shm df::msg python3.10)
 
 target_include_directories(python-extend-ipc PRIVATE ${python-3.10_INCLUDE_DIRS})
 

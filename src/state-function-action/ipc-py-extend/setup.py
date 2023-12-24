@@ -5,7 +5,7 @@ LIB_DIRECTORY = "../../../cmake-build-debug/out/lib"
 
 module = Extension('ipc',
                    include_dirs=[INCLUDE_DIRECTORY],
-                   libraries=['utils', 'shm'],
+                   libraries=['utils', 'shm', 'msg'],
                    library_dirs=[LIB_DIRECTORY],
                    extra_compile_args=['-std=c++20'],
                    sources=['ipc.cpp'])

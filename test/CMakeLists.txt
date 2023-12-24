@@ -6,9 +6,13 @@ set(StateFunctionSidecar_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/state-function-libr
 add_executable(Test-StateFunctionKVStoreBucket StateFunctionKVStoreBucketTest.cpp)
 target_include_directories(Test-StateFunctionKVStoreBucket PRIVATE ${StateFunction_INCLUDE_DIR})
 target_include_directories(Test-StateFunctionKVStoreBucket PRIVATE ${StateFunctionSidecar_INCLUDE_DIR})
-target_link_libraries(Test-StateFunctionKVStoreBucket df::utils df::shm df::smalloc)
+target_link_libraries(Test-StateFunctionKVStoreBucket df::utils df::shm df::msg df::smalloc)
 
 add_executable(Test-Cpp cppTest.cpp)
 target_include_directories(Test-Cpp PRIVATE ${StateFunction_INCLUDE_DIR})
 target_link_libraries(Test-Cpp df::utils)
+
+add_executable(Test-MSG msg_test.cpp)
+target_include_directories(Test-MSG PRIVATE ${StateFunction_INCLUDE_DIR})
+target_link_libraries(Test-MSG df::utils df::msg)
 

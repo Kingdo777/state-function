@@ -25,17 +25,50 @@
 
 static PyObject *StateFunctionError;
 
+enum KWLIST {
+    BUCKET_NAME,
+    BUCKET_SIZE,
+    USE_PIPE,
+    ACTION_PIPE_KEY,
+};
+static std::string kwlist_string[] = {
+        "bucket_name",
+        "bucket_size",
+        "use_pipe",
+        "action_pipe_key",
+};
+
 static PyObject *
-statefunction_create_bucket(PyObject *self, PyObject *args) {
+statefunction_create_bucket(PyObject *self, PyObject *args, PyObject *kwargs) {
     const char *bucket_name_data;
     size_t bucket_name_len;
 
     size_t bucket_size;
 
-    if (!PyArg_ParseTuple(args, "s#K", &bucket_name_data, &bucket_name_len, &bucket_size))
+    bool use_pipe = false;
+    key_t action_pipe_key = -1;
+
+    static char *kwlist[] = {kwlist_string[KWLIST::BUCKET_NAME].data(),
+                             kwlist_string[KWLIST::BUCKET_SIZE].data(),
+                             kwlist_string[KWLIST::USE_PIPE].data(),
+                             kwlist_string[KWLIST::ACTION_PIPE_KEY].data(),
+                             nullptr};
+    /// 解析参数这里有一个必须谨慎的地方, format必须和后面的数据类型一一对应, 否则会出现内存错误
+    /// 例如: `k` 表示unsigned long, 和size_t对应, `i` 表示int, 和key_t对应
+    /// 但是如果将`k`和key_t对应, 那么就会导致内存溢出, 因为key_t是int类型, 而`k`是unsigned long类型, 两者的内存大小不一致
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#k|pi", kwlist, &bucket_name_data, &bucket_name_len, &bucket_size,
+                                     &use_pipe, &action_pipe_key))
         return nullptr;
 
     std::string bucket_name{bucket_name_data, bucket_name_len};
+
+    if (bucket_name.empty()) {
+        SPDLOG_INFO("bucket_name: {}, bucket_size: {}, use_pipe: {}, action_pipe_key: {}", bucket_name, bucket_size,
+                    use_pipe, action_pipe_key);
+        PyErr_SetString(StateFunctionError, "bucket_name is empty string");
+        return nullptr;
+    }
+
 
     if (bucket_name.empty()) {
         PyErr_SetString(StateFunctionError, "bucket_name is empty string");
@@ -47,9 +80,11 @@ statefunction_create_bucket(PyObject *self, PyObject *args) {
 
     bucket->name = bucket_name;
     bucket->size = bucket_size;
-    try{
-        bucket->bucket = std::make_shared<df::dataStruct::KV_Store::StateFunctionKVStoreBucket>(bucket_name, bucket_size);
-    }catch (std::exception &e) {
+    try {
+        bucket->bucket = df::dataStruct::KV_Store::StateFunctionKVStoreBucket::CreateBucket(bucket_name,
+                                                                                            bucket_size, use_pipe,
+                                                                                            action_pipe_key);
+    } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
         return nullptr;
     }
@@ -62,12 +97,20 @@ statefunction_create_bucket(PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-statefunction_get_bucket(PyObject *self, PyObject *args) {
+statefunction_get_bucket(PyObject *self, PyObject *args, PyObject *kwargs) {
     const char *bucket_name_data;
     size_t bucket_name_len;
 
+    bool use_pipe = false;
+    key_t action_pipe_key;
 
-    if (!PyArg_ParseTuple(args, "s#", &bucket_name_data, &bucket_name_len))
+    static char *kwlist[] = {kwlist_string[KWLIST::BUCKET_NAME].data(),
+                             kwlist_string[KWLIST::USE_PIPE].data(),
+                             kwlist_string[KWLIST::ACTION_PIPE_KEY].data(),
+                             nullptr};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#|pi", kwlist, &bucket_name_data, &bucket_name_len, &use_pipe,
+                                     &action_pipe_key))
         return nullptr;
 
     std::string bucket_name{bucket_name_data, bucket_name_len};
@@ -82,9 +125,10 @@ statefunction_get_bucket(PyObject *self, PyObject *args) {
 
     try {
         bucket->name = bucket_name;
-        bucket->bucket = std::make_shared<df::dataStruct::KV_Store::StateFunctionKVStoreBucket>(bucket_name);
+        bucket->bucket = df::dataStruct::KV_Store::StateFunctionKVStoreBucket::GetBucket(bucket_name, use_pipe,
+                                                                                         action_pipe_key);
         bucket->size = bucket->bucket->getBucketSize();
-    }catch (std::exception &e) {
+    } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
         return nullptr;
     }
@@ -113,12 +157,12 @@ statefunction_system(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef StateFunctionMethods[] = {
-        {"system",        statefunction_system,        METH_VARARGS,
+        {"system",        statefunction_system,                                       METH_VARARGS,
                                       "Execute a shell command."},
-        {"create_bucket", statefunction_create_bucket, METH_VARARGS,
-                                      "Create new bucket."},
-        {"get_bucket",    statefunction_get_bucket,    METH_VARARGS,
-                                      "Get exist bucket."},
+        {"create_bucket", reinterpret_cast<PyCFunction>(statefunction_create_bucket), METH_VARARGS | METH_KEYWORDS,
+                "Create new bucket."},
+        {"get_bucket",    reinterpret_cast<PyCFunction>(statefunction_get_bucket),    METH_VARARGS | METH_KEYWORDS,
+                "Get exist bucket."},
         {nullptr,         nullptr, 0, nullptr}        /* Sentinel */
 };
 
