@@ -64,7 +64,7 @@ int create_test() {
 }
 
 int main() {
-    df::utils::initLog("StateFunctionKVStoreBucketTest");
+    df::utils::initLog();
 
     create_test();
 

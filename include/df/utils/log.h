@@ -5,9 +5,6 @@
 #ifndef StateFunction_LOG_H
 #define StateFunction_LOG_H
 
-#include <boost/dll.hpp>
-#include <boost/filesystem.hpp>
-
 /// SPDLOG_ACTIVE_LEVEL 是spdlog自己宏, 指定了使用spflog的宏函数输出的时候, 显示那一级别的日志信息
 #ifdef NO_DEBUG
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO // 不显示DEBUG的信息
@@ -24,9 +21,8 @@
             "Logging set to trace but minimum log level set too high ({})", \
             SPDLOG_ACTIVE_LEVEL);
 
-namespace df::utils
-{
-    void initLog(std::string exec_name = "", const std::string& log_type = "default");
+namespace df::utils {
+    void initLog(std::string exec_name = "");
 
     void printAllENV();
 }

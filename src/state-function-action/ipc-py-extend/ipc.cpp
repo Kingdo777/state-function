@@ -158,6 +158,8 @@ PyMODINIT_FUNC
 PyInit_ipc(void) {
     PyObject *m;
 
+    df::utils::initLog();
+
     m = PyModule_Create(&IPCModule);
     if (m == nullptr)
         return nullptr;

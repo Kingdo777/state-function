@@ -5,6 +5,7 @@
 #include <df/utils/log.h>
 #include <string>
 #include <utility>
+#include <filesystem>
 #include "df/utils/json.h"
 #include "df/utils/macro.h"
 
@@ -23,7 +24,21 @@ typedef struct {
     std::shared_ptr<ClassA> sp_a;
 } StructA;
 
+std::string getExecName() {
+    auto currentTime = std::chrono::system_clock::now();
+    auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(currentTime.time_since_epoch());
+    auto microsecond = timestamp.count() % 1000000;
+
+    char buffer[1024];
+    auto size = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+    auto exec_name = std::filesystem::path(std::string(buffer, size)).filename().string();
+
+    return fmt::format("{}-{}", exec_name, microsecond);
+}
+
 int main() {
+    SPDLOG_INFO("exec_name: {}", getExecName());
+    return 0;
 
     auto result = R"({"status":"OK","message":{"key":"2004308511","size":""}})";
     df::utils::Json json;

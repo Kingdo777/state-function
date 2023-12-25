@@ -2,14 +2,15 @@
 // Created by 14408 on 2022/2/18.
 //
 
-#include <df/utils/config.h>
 #include <df/utils/log.h>
+#include <df/utils/config.h>
 #include <df/utils/macro.h>
 #include <df/utils/os.h>
 #include <df/utils/uuid.h>
 
 namespace df::utils {
-    const std::string Config::logLevel = getEnvVar("LOG_LEVEL", "trace");
+    const spdlog::level::level_enum Config::logLevel =
+            spdlog::level::from_str(getEnvVar("STATE_FUNCTION_LOG_LEVEL", "trace"));
     const std::string Config::enableLogFile = getEnvVar("ENABLE_LOG_FILE", "off");
     const std::string Config::logFileBaseDir = getEnvVar("LOG_FILE_BASE_DIR", "/tmp/df/var/logs/");
 

@@ -8,12 +8,13 @@
 #include <chrono>
 #include <string>
 #include <df/utils/env.h>
+#include <spdlog/common.h>
 
 namespace df::utils {
     class Config {
     public:
         /// Log
-        static std::string LogLevel() { return logLevel; };
+        static spdlog::level::level_enum LogLevel() { return logLevel; };
 
         static std::string EnableLogFile() { return enableLogFile; };
 
@@ -34,7 +35,7 @@ namespace df::utils {
 
     private:
         /// Log
-        const static std::string logLevel;
+        const static spdlog::level::level_enum logLevel;
         const static std::string enableLogFile;
         const static std::string logFileBaseDir;
 

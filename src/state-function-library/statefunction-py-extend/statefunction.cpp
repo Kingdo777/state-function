@@ -179,6 +179,8 @@ PyMODINIT_FUNC
 PyInit_statefunction(void) {
     PyObject *m;
 
+    df::utils::initLog();
+
     m = PyModule_Create(&StateFunctionModule);
     if (m == nullptr)
         return nullptr;
