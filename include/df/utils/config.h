@@ -8,7 +8,7 @@
 #include <chrono>
 #include <string>
 #include <df/utils/env.h>
-#include <spdlog/common.h>
+#include <df/utils/log.h>
 
 namespace df::utils {
     class Config {
